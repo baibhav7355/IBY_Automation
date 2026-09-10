@@ -58,3 +58,6 @@ htmlcov/
 *~
 .DS_Store
 Thumbs.db
+
+# Scratch exploration scripts
+scripts/scratch_*.py

@@ -1,5 +1,4 @@
-"""Data processing and segmentation pipeline package for PC operation logs."""
-
+"""src/pipeline/__init__.py – pipeline package exports."""
 from src.pipeline.loader import (
     find_session_chunks,
     find_session_event_files,
