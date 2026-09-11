@@ -1,9 +1,10 @@
-"""Run the Golden Thread Segmenter over all Dataset A sessions, write segments.jsonl,
-then automatically invoke evaluate_dataset_a.py and print the scorecard.
+"""Run the Golden Thread Segmenter with LLM Labeling and Semantic Merging
+over all Dataset A sessions, write segments.jsonl, then automatically invoke
+evaluate_dataset_a.py and print the scorecard.
 
 Usage::
 
-    python scripts/run_segmentation.py [--dataset dataset_a] [--output segments_dataset_a.jsonl]
+    python scripts/run_segmentation.py [--dataset dataset_a] [--output segments.jsonl]
 """
 from __future__ import annotations
 
@@ -18,11 +19,13 @@ sys.stdout.reconfigure(encoding="utf-8")
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from src.pipeline.loader import load_session_events
-from src.segmentation.segmenter import GoldenThreadSegmenter
+from src.segmentation.segmenter import GoldenThreadSegmenter, merge_segments
 
 
 def parse_args() -> argparse.Namespace:
-    p = argparse.ArgumentParser(description="Run segmentation on a dataset and evaluate.")
+    p = argparse.ArgumentParser(
+        description="Run segmentation with LLM labeling and semantic merging on a dataset and evaluate."
+    )
     p.add_argument("--dataset", type=Path, default=Path("dataset_a"),
                    help="Dataset directory (default: dataset_a)")
     p.add_argument("--output", type=Path, default=Path("segments.jsonl"),
@@ -33,7 +36,10 @@ def parse_args() -> argparse.Namespace:
                    help="Boundary tolerance in seconds for evaluator (default: 5)")
     p.add_argument("--use-rules", action="store_true",
                    help="Use domain heuristic rules for labeling instead of mock fallback")
+    p.add_argument("--max-gap-s", type=int, default=30,
+                   help="Maximum gap in seconds between segments to allow semantic merging (default: 30)")
     return p.parse_args()
+
 
 
 def main() -> None:

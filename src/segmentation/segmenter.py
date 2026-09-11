@@ -39,6 +39,8 @@ from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from typing import Any, Callable, Dict, Iterator, List, Optional, Set, Tuple, Union
 
+from src.segmentation.llm_labeler import predict_label
+
 # ──────────────────────────────────────────────────────────────────────────────
 # Constants
 # ──────────────────────────────────────────────────────────────────────────────
@@ -323,6 +325,7 @@ def extract_segment_context(events: List[Dict[str, Any]]) -> Dict[str, Any]:
 
     for ev in events:
         ctx = ev.get("context") or {}
+        pl = ev.get("payload") or {}
         aa = ctx.get("active_app") or {}
         app_name = aa.get("app_name") or aa.get("process_name") or ""
         wt = _get_window_title(ev)
@@ -341,20 +344,39 @@ def extract_segment_context(events: List[Dict[str, Any]]) -> Dict[str, Any]:
             urls.add(url)
 
         et = ctx.get("extracted_text")
-        if et and isinstance(et, str) and et.strip():
-            extracted_texts.append(et.strip()[:200])
-        elif isinstance(et, list):
-            for item in et:
-                if isinstance(item, str) and item.strip():
-                    extracted_texts.append(item.strip()[:200])
+        if et:
+            if isinstance(et, str) and et.strip():
+                extracted_texts.append(et.strip()[:200])
+            elif isinstance(et, dict) and et.get("text"):
+                extracted_texts.append(str(et["text"]).strip()[:300])
+            elif isinstance(et, list):
+                for item in et:
+                    if isinstance(item, str) and item.strip():
+                        extracted_texts.append(item.strip()[:200])
+                    elif isinstance(item, dict) and item.get("text"):
+                        extracted_texts.append(str(item["text"]).strip()[:300])
+
+        te = pl.get("target_element") or {}
+        elem = pl.get("element") or {}
+        elem_attrs = elem.get("attributes") or {}
+        form_txt = (
+            te.get("name")
+            or elem.get("text")
+            or elem_attrs.get("innerText")
+            or elem_attrs.get("placeholder")
+            or elem_attrs.get("value")
+        )
+        if form_txt and isinstance(form_txt, str) and form_txt.strip():
+            extracted_texts.append(form_txt.strip()[:100])
 
     return {
         "portal_system": portal_system,
         "window_titles": sorted(window_titles),
         "urls": sorted(urls),
-        "extracted_text": sorted(set(extracted_texts))[:10],
+        "extracted_text": sorted(set(extracted_texts))[:20],
         "apps": sorted(apps),
     }
+
 
 
 def _rule_based_label(context: Dict[str, Any]) -> str:
@@ -460,14 +482,32 @@ class _SegmentBuilder:
             self.urls.add(url)
 
         ctx = ev.get("context") or {}
+        pl = ev.get("payload") or {}
         et = ctx.get("extracted_text")
         if et:
-            if isinstance(et, str):
-                self.extracted_texts.append(et[:200])
+            if isinstance(et, str) and et.strip():
+                self.extracted_texts.append(et.strip()[:200])
+            elif isinstance(et, dict) and et.get("text"):
+                self.extracted_texts.append(str(et["text"]).strip()[:300])
             elif isinstance(et, list):
                 for item in et:
-                    if isinstance(item, str):
-                        self.extracted_texts.append(item[:200])
+                    if isinstance(item, str) and item.strip():
+                        self.extracted_texts.append(item.strip()[:200])
+                    elif isinstance(item, dict) and item.get("text"):
+                        self.extracted_texts.append(str(item["text"]).strip()[:300])
+
+        te = pl.get("target_element") or {}
+        elem = pl.get("element") or {}
+        elem_attrs = elem.get("attributes") or {}
+        form_txt = (
+            te.get("name")
+            or elem.get("text")
+            or elem_attrs.get("innerText")
+            or elem_attrs.get("placeholder")
+            or elem_attrs.get("value")
+        )
+        if form_txt and isinstance(form_txt, str) and form_txt.strip():
+            self.extracted_texts.append(form_txt.strip()[:100])
 
         ps = _get_portal_system(wt)
         if ps and _is_chrome(app):
@@ -508,6 +548,69 @@ class _SegmentBuilder:
 
 
 # ──────────────────────────────────────────────────────────────────────────────
+# Step 2: Semantic Merging Post-Processor
+# ──────────────────────────────────────────────────────────────────────────────
+
+
+def merge_segments(
+    segments: List[Segment],
+    max_gap_ms: int = 30_000,
+) -> List[Segment]:
+    """Semantic Merging Post-Processor.
+
+    Iterate through chronological segments. If Segment A and Segment B are adjacent
+    (or separated by less than a 30-second gap) and share the EXACT same label,
+    merge them into a single segment spanning A.start to B.end.
+
+    Args:
+        segments: List of chronological Segment objects.
+        max_gap_ms: Maximum gap between segments in ms to allow merging (default: 30,000 ms).
+
+    Returns:
+        List of merged Segment objects.
+    """
+    if not segments:
+        return []
+
+    sorted_segs = sorted(segments, key=lambda s: s.start_ms)
+    merged: List[Segment] = [sorted_segs[0]]
+
+    for curr in sorted_segs[1:]:
+        prev = merged[-1]
+        gap_ms = curr.start_ms - prev.end_ms
+
+        prev_anc = set(prev.anchor_texts)
+        curr_anc = set(curr.anchor_texts)
+        different_entities = bool(prev_anc and curr_anc and not (prev_anc & curr_anc))
+
+        can_merge = (
+            prev.label == curr.label
+            and prev.label != "process_unknown"
+            and gap_ms <= max_gap_ms
+            and not different_entities
+            and ((curr.start_ms - prev.start_ms) < 75_000 or prev.duration_s < 25.0 or curr.duration_s < 25.0)
+        )
+
+        if can_merge:
+            merged[-1] = Segment(
+                session_id=prev.session_id,
+                start_ms=prev.start_ms,
+                end_ms=max(prev.end_ms, curr.end_ms),
+                label=prev.label,
+                event_count=prev.event_count + curr.event_count,
+                window_titles=sorted(set(prev.window_titles) | set(curr.window_titles)),
+                urls=sorted(set(prev.urls) | set(curr.urls)),
+                extracted_texts=prev.extracted_texts + curr.extracted_texts,
+                apps_seen=sorted(set(prev.apps_seen) | set(curr.apps_seen)),
+                anchor_texts=prev.anchor_texts + curr.anchor_texts,
+            )
+        else:
+            merged.append(curr)
+
+    return merged
+
+
+# ──────────────────────────────────────────────────────────────────────────────
 # Step 2: Main Segmenter State Machine
 # ──────────────────────────────────────────────────────────────────────────────
 
@@ -540,8 +643,28 @@ class GoldenThreadSegmenter:
         if not kept:
             return
 
-        # Step 2: run state machine
-        yield from self._run_state_machine(kept)
+        # Step 2: generate initial heuristic segments from state machine
+        raw_segments = list(self._run_state_machine(kept))
+        if not raw_segments:
+            return
+
+        # Step 3: pass each segment's context to llm_labeler (or user-supplied llm_fn)
+        label_fn = self.llm_fn if self.llm_fn is not None else predict_label
+        for seg in raw_segments:
+            ctx = {
+                "window_titles": seg.window_titles,
+                "urls": seg.urls,
+                "extracted_text": seg.extracted_texts,
+                "portal_system": None,
+                "apps": seg.apps_seen,
+            }
+            lbl = label_fn(ctx)
+            if lbl and isinstance(lbl, str) and lbl.strip():
+                seg.label = lbl.strip()
+
+        # Step 4: apply semantic merging post-processor
+        merged_segments = merge_segments(raw_segments)
+        yield from merged_segments
 
     def _run_state_machine(self, events: List[Dict[str, Any]]) -> Iterator[Segment]:
         """Core state machine: consumes filtered events, yields completed segments."""
