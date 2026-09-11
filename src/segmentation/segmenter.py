@@ -248,7 +248,8 @@ def _is_hub_url(url: Optional[str]) -> bool:
 
 
 def _is_chrome(app_name: Optional[str]) -> bool:
-    return "chrome" in (app_name or "").lower()
+    name = (app_name or "").lower()
+    return any(b in name for b in ("chrome", "edge", "browser"))
 
 
 def _get_app_name(event: Dict[str, Any]) -> str:
