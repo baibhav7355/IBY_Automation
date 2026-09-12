@@ -2,238 +2,145 @@
   {
     "process": "supplier_communication",
     "volume": 100,
+    "total_duration_min": 61.9,
     "avg_duration_s": 37.1,
-    "total_time_min": 61.9,
-    "total_time_hours": 1.03,
-    "app_switches_per_exec": 7.1,
+    "avg_app_switches": 6.8,
+    "avg_clipboard_ops": 2.6,
+    "friction": 9.39,
+    "sessions_count": 14,
     "staff_count": 4,
-    "unique_apps": [
-      "Microsoft Edge",
-      "Microsoft Excel",
-      "Microsoft Word",
-      "Notepad",
-      "OpenWith",
-      "Windows Explorer",
-      "WindowsTerminal",
-      "ms-teams",
-      "prl_cc"
-    ],
-    "feasibility": 0.9,
-    "roi_score": 956.7,
-    "net_hours_saved_annual": 412.0
+    "roi_score": 25.3
   },
   {
     "process": "expense_processing",
     "volume": 61,
+    "total_duration_min": 35.0,
     "avg_duration_s": 34.4,
-    "total_time_min": 34.9,
-    "total_time_hours": 0.58,
-    "app_switches_per_exec": 6.4,
+    "avg_app_switches": 6.3,
+    "avg_clipboard_ops": 3.2,
+    "friction": 9.44,
+    "sessions_count": 14,
     "staff_count": 4,
-    "unique_apps": [
-      "Microsoft Edge",
-      "Microsoft Excel",
-      "Microsoft Word",
-      "Notepad",
-      "Windows Explorer",
-      "WindowsTerminal",
-      "ms-teams",
-      "prl_cc",
-      "unknown"
-    ],
-    "feasibility": 0.95,
-    "roi_score": 542.5,
-    "net_hours_saved_annual": 233.0
-  },
-  {
-    "process": "leave_application_processing",
-    "volume": 26,
-    "avg_duration_s": 41.6,
-    "total_time_min": 18.0,
-    "total_time_hours": 0.3,
-    "app_switches_per_exec": 5.1,
-    "staff_count": 4,
-    "unique_apps": [
-      "Microsoft Edge",
-      "Microsoft Word",
-      "Notepad",
-      "Windows Explorer",
-      "WindowsTerminal",
-      "ms-teams",
-      "prl_cc"
-    ],
-    "feasibility": 0.8,
-    "roi_score": 212.4,
-    "net_hours_saved_annual": 120.0
-  },
-  {
-    "process": "inventory_adjustment",
-    "volume": 25,
-    "avg_duration_s": 37.9,
-    "total_time_min": 15.8,
-    "total_time_hours": 0.26,
-    "app_switches_per_exec": 3.8,
-    "staff_count": 4,
-    "unique_apps": [
-      "Microsoft Edge",
-      "Microsoft Excel",
-      "Microsoft Word",
-      "Notepad",
-      "OpenWith",
-      "Windows Explorer",
-      "WindowsTerminal",
-      "ms-teams"
-    ],
-    "feasibility": 0.85,
-    "roi_score": 175.4,
-    "net_hours_saved_annual": 105.0
+    "roi_score": 16.75
   },
   {
     "process": "onboarding_verification",
     "volume": 21,
+    "total_duration_min": 11.8,
     "avg_duration_s": 33.7,
-    "total_time_min": 11.8,
-    "total_time_hours": 0.2,
-    "app_switches_per_exec": 6.7,
+    "avg_app_switches": 6.4,
+    "avg_clipboard_ops": 2.7,
+    "friction": 9.1,
+    "sessions_count": 9,
     "staff_count": 4,
-    "unique_apps": [
-      "Microsoft Edge",
-      "Microsoft Word",
-      "Notepad",
-      "Windows Explorer",
-      "WindowsTerminal",
-      "ms-teams"
-    ],
-    "feasibility": 0.75,
-    "roi_score": 147.3,
-    "net_hours_saved_annual": 64.0
+    "roi_score": 5.67
+  },
+  {
+    "process": "leave_application_processing",
+    "volume": 26,
+    "total_duration_min": 18.0,
+    "avg_duration_s": 41.6,
+    "avg_app_switches": 4.9,
+    "avg_clipboard_ops": 3.8,
+    "friction": 8.73,
+    "sessions_count": 11,
+    "staff_count": 4,
+    "roi_score": 5.45
+  },
+  {
+    "process": "inventory_adjustment",
+    "volume": 25,
+    "total_duration_min": 15.8,
+    "avg_duration_s": 38.0,
+    "avg_app_switches": 3.4,
+    "avg_clipboard_ops": 4.7,
+    "friction": 8.12,
+    "sessions_count": 11,
+    "staff_count": 4,
+    "roi_score": 5.34
   },
   {
     "process": "payroll_adjustment",
     "volume": 16,
-    "avg_duration_s": 29.6,
-    "total_time_min": 7.9,
-    "total_time_hours": 0.13,
-    "app_switches_per_exec": 4.3,
+    "total_duration_min": 7.9,
+    "avg_duration_s": 29.7,
+    "avg_app_switches": 4.6,
+    "avg_clipboard_ops": 2.9,
+    "friction": 7.5,
+    "sessions_count": 8,
     "staff_count": 3,
-    "unique_apps": [
-      "AcerRegistrationBackGroundTask",
-      "Microsoft Edge",
-      "Microsoft Word",
-      "Notepad",
-      "OpenWith",
-      "WindowsTerminal",
-      "ms-teams"
-    ],
-    "feasibility": 0.7,
-    "roi_score": 75.7,
-    "net_hours_saved_annual": 43.0
+    "roi_score": 4.04
   },
   {
     "process": "invoice_approval",
     "volume": 13,
-    "avg_duration_s": 25.4,
-    "total_time_min": 5.5,
-    "total_time_hours": 0.09,
-    "app_switches_per_exec": 2.2,
+    "total_duration_min": 5.5,
+    "avg_duration_s": 25.3,
+    "avg_app_switches": 2.0,
+    "avg_clipboard_ops": 2.3,
+    "friction": 4.31,
+    "sessions_count": 8,
     "staff_count": 4,
-    "unique_apps": [
-      "Microsoft Edge",
-      "Notepad",
-      "Windows Explorer",
-      "WindowsTerminal",
-      "ms-teams"
-    ],
-    "feasibility": 0.85,
-    "roi_score": 52.1,
-    "net_hours_saved_annual": 37.0
-  },
-  {
-    "process": "budget_variance_analysis",
-    "volume": 4,
-    "avg_duration_s": 48.5,
-    "total_time_min": 3.2,
-    "total_time_hours": 0.05,
-    "app_switches_per_exec": 7.0,
-    "staff_count": 2,
-    "unique_apps": [
-      "Microsoft Edge",
-      "Microsoft Excel",
-      "Microsoft Word",
-      "Notepad"
-    ],
-    "feasibility": 0.5,
-    "roi_score": 27.6,
-    "net_hours_saved_annual": 18.0
-  },
-  {
-    "process": "resident_tax_verification",
-    "volume": 6,
-    "avg_duration_s": 27.4,
-    "total_time_min": 2.7,
-    "total_time_hours": 0.05,
-    "app_switches_per_exec": 2.3,
-    "staff_count": 3,
-    "unique_apps": [
-      "Microsoft Edge",
-      "Notepad",
-      "ms-teams",
-      "prl_cc",
-      "procmine-desktop-agent"
-    ],
-    "feasibility": 0.75,
-    "roi_score": 23.1,
-    "net_hours_saved_annual": 15.0
-  },
-  {
-    "process": "shipment_tracking",
-    "volume": 2,
-    "avg_duration_s": 44.1,
-    "total_time_min": 1.5,
-    "total_time_hours": 0.02,
-    "app_switches_per_exec": 2.5,
-    "staff_count": 2,
-    "unique_apps": [
-      "Microsoft Edge",
-      "Notepad",
-      "OpenWith"
-    ],
-    "feasibility": 0.85,
-    "roi_score": 14.3,
-    "net_hours_saved_annual": 10.0
+    "roi_score": 2.21
   },
   {
     "process": "return_processing",
     "volume": 2,
+    "total_duration_min": 0.4,
     "avg_duration_s": 12.5,
-    "total_time_min": 0.4,
-    "total_time_hours": 0.01,
-    "app_switches_per_exec": 11.0,
+    "avg_app_switches": 9.0,
+    "avg_clipboard_ops": 0.0,
+    "friction": 9.0,
+    "sessions_count": 2,
     "staff_count": 1,
-    "unique_apps": [
-      "Microsoft Edge",
-      "Notepad",
-      "Windows Explorer",
-      "WindowsTerminal",
-      "ms-teams"
-    ],
-    "feasibility": 0.8,
-    "roi_score": 7.4,
-    "net_hours_saved_annual": 3.0
+    "roi_score": 1.44
+  },
+  {
+    "process": "resident_tax_verification",
+    "volume": 6,
+    "total_duration_min": 2.7,
+    "avg_duration_s": 27.0,
+    "avg_app_switches": 2.7,
+    "avg_clipboard_ops": 2.3,
+    "friction": 5.0,
+    "sessions_count": 4,
+    "staff_count": 3,
+    "roi_score": 1.11
+  },
+  {
+    "process": "budget_variance_analysis",
+    "volume": 4,
+    "total_duration_min": 3.2,
+    "avg_duration_s": 48.2,
+    "avg_app_switches": 6.8,
+    "avg_clipboard_ops": 3.0,
+    "friction": 9.75,
+    "sessions_count": 2,
+    "staff_count": 2,
+    "roi_score": 0.81
+  },
+  {
+    "process": "shipment_tracking",
+    "volume": 2,
+    "total_duration_min": 1.5,
+    "avg_duration_s": 44.0,
+    "avg_app_switches": 2.0,
+    "avg_clipboard_ops": 5.5,
+    "friction": 7.5,
+    "sessions_count": 2,
+    "staff_count": 2,
+    "roi_score": 0.34
   },
   {
     "process": "payment_processing",
     "volume": 1,
-    "avg_duration_s": 21.8,
-    "total_time_min": 0.4,
-    "total_time_hours": 0.01,
-    "app_switches_per_exec": 0.0,
+    "total_duration_min": 0.4,
+    "avg_duration_s": 22.0,
+    "avg_app_switches": 0.0,
+    "avg_clipboard_ops": 3.0,
+    "friction": 3.0,
+    "sessions_count": 1,
     "staff_count": 1,
-    "unique_apps": [
-      "Microsoft Edge"
-    ],
-    "feasibility": 0.65,
-    "roi_score": 2.0,
-    "net_hours_saved_annual": 2.0
+    "roi_score": 0.14
   }
 ]

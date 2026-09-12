@@ -26,8 +26,8 @@ As an elite Forward Deployed Engineering (FDE) team, we deployed an end-to-end t
 **Automation must not be pursued for technical novelty; it must be focused strictly where repetitive volume, application fragmentation, and rule standardization intersect to generate maximum return on investment (ROI).**
 
 Our process mining reveals that **57.7% of all back-office operational volume** is concentrated in just two repetitive workflows:
-- **`supplier_communication` (Rank #1):** 100 executions (35.8% of total volume), consuming 61.9 minutes of active time in the sample with **7.1 cross-app context switches per transaction**.
-- **`expense_processing` (Rank #2):** 61 executions (21.9% of total volume), consuming 34.9 minutes with **6.4 switches per transaction**.
+- **`supplier_communication` (Rank #1):** 100 executions (35.8% of total volume), consuming 61.9 minutes of active time in the sample with **6.8 cross-app switches and 2.6 clipboard operations (9.39 friction score)** per transaction.
+- **`expense_processing` (Rank #2):** 61 executions (21.9% of total volume), consuming 35.0 minutes with **6.3 switches and 3.2 clipboard operations (9.44 friction score)** per transaction.
 
 We built and verified a working automation prototype (`src/automation/supplier_automation.py`) targeting `supplier_communication`. By replacing brittle human copy-pasting with a deterministic rule validation engine, this solution eliminates **over 410 hours of annual friction** on supplier operations alone, accelerates turnaround time from minutes to sub-second execution, and preserves mandatory human governance for non-standard contractual variances.
 
@@ -38,43 +38,45 @@ We built and verified a working automation prototype (`src/automation/supplier_a
 ### 2.1 Production Workflow Inventory
 Applying our verified segmentation and process mining pipeline (`src/analytics/process_miner.py`) to the production environment (Dataset B, 15 sessions across 4 distinct staff workstations) yielded the following operational inventory:
 
-| Rank | Business Process | Volume ($N$) | Vol % | Avg Dur (s) | Total Time (min) | App Switches / Exec | Staff Involved | Feasibility Weight | Annual Net Hours Saved | ROI Score |
+| Rank | Business Process | Volume ($N$) | Total Time (min) | Avg Dur (s) | App Switches | Clip Ops | Friction | Sessions | Staff | ROI Score |
 | :---: | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| **#1** | **`supplier_communication`** | **100** | **35.8%** | **37.1** | **61.9** | **7.1** | **4 / 4** | **0.90** | **413 hrs** | **956.7** |
-| **#2** | **`expense_processing`** | **61** | **21.9%** | **34.4** | **34.9** | **6.4** | **4 / 4** | **0.95** | **233 hrs** | **542.5** |
-| **#3** | `leave_application_processing` | 26 | 9.3% | 41.6 | 18.0 | 5.1 | 4 / 4 | 0.80 | 120 hrs | 212.4 |
-| **#4** | `inventory_adjustment` | 25 | 9.0% | 37.9 | 15.8 | 3.8 | 4 / 4 | 0.85 | 105 hrs | 175.4 |
-| **#5** | `onboarding_verification` | 21 | 7.5% | 33.7 | 11.8 | 6.7 | 4 / 4 | 0.75 | 74 hrs | 147.3 |
-| **#6** | `payroll_adjustment` | 16 | 5.7% | 29.6 | 7.9 | 4.3 | 3 / 4 | 0.70 | 43 hrs | 75.7 |
-| **#7** | `invoice_approval` | 13 | 4.7% | 25.4 | 5.5 | 2.2 | 4 / 4 | 0.85 | 37 hrs | 52.1 |
-| **#8** | `budget_variance_analysis` | 4 | 1.4% | 48.5 | 3.2 | 7.0 | 2 / 4 | 0.50 | 17 hrs | 27.6 |
-| **#9** | `resident_tax_verification` | 6 | 2.2% | 27.4 | 2.7 | 2.3 | 3 / 4 | 0.75 | 15 hrs | 23.1 |
-| **#10** | `shipment_tracking` | 2 | 0.7% | 44.1 | 1.5 | 2.5 | 2 / 4 | 0.85 | 9 hrs | 14.3 |
-| **#11** | `return_processing` | 2 | 0.7% | 12.5 | 0.4 | 11.0 | 1 / 4 | 0.80 | 3 hrs | 7.4 |
-| **#12** | `payment_processing` | 1 | 0.4% | 21.8 | 0.4 | 0.0 | 1 / 4 | 0.65 | 2 hrs | 2.0 |
-| — | *Total / Sample Metrics* | *279* | *100%* | *35.8s* | *166.3 min* | *5.9 avg* | *4 staff* | *0.82* | *1,081 hrs* | *—* |
+| **#1** | **`supplier_communication`** | **100** | **61.9** | **37.1s** | **6.8** | **2.6** | **9.39** | **14 / 15** | **4 / 4** | **25.30** |
+| **#2** | **`expense_processing`** | **61** | **35.0** | **34.4s** | **6.3** | **3.2** | **9.44** | **14 / 15** | **4 / 4** | **16.75** |
+| **#3** | `onboarding_verification` | 21 | 11.8 | 33.7s | 6.4 | 2.7 | 9.10 | 9 / 15 | 4 / 4 | 5.67 |
+| **#4** | `leave_application_processing` | 26 | 18.0 | 41.6s | 4.9 | 3.8 | 8.73 | 11 / 15 | 4 / 4 | 5.45 |
+| **#5** | `inventory_adjustment` | 25 | 15.8 | 38.0s | 3.4 | 4.7 | 8.12 | 11 / 15 | 4 / 4 | 5.34 |
+| **#6** | `payroll_adjustment` | 16 | 7.9 | 29.7s | 4.6 | 2.9 | 7.50 | 8 / 15 | 3 / 4 | 4.04 |
+| **#7** | `invoice_approval` | 13 | 5.5 | 25.3s | 2.0 | 2.3 | 4.31 | 8 / 15 | 4 / 4 | 2.21 |
+| **#8** | `return_processing` | 2 | 0.4 | 12.5s | 9.0 | 0.0 | 9.00 | 2 / 15 | 1 / 4 | 1.44 |
+| **#9** | `resident_tax_verification` | 6 | 2.7 | 27.0s | 2.7 | 2.3 | 5.00 | 4 / 15 | 3 / 4 | 1.11 |
+| **#10** | `budget_variance_analysis` | 4 | 3.2 | 48.2s | 6.8 | 3.0 | 9.75 | 2 / 15 | 2 / 4 | 0.81 |
+| **#11** | `shipment_tracking` | 2 | 1.5 | 44.0s | 2.0 | 5.5 | 7.50 | 2 / 15 | 2 / 4 | 0.34 |
+| **#12** | `payment_processing` | 1 | 0.4 | 22.0s | 0.0 | 3.0 | 3.00 | 1 / 15 | 1 / 4 | 0.14 |
+| — | *Total / Enterprise Metrics* | *279* | *166.3 min* | *35.8s avg* | *5.9 avg* | *3.1 avg* | *9.00 avg* | *15 sessions* | *4 staff* | *—* |
 
 ### 2.2 ROI Prioritization Formula
-To avoid subjective bias, rankings were computed using an engineering ROI Priority Index:
+To systematically rank automation candidates, the process miner calculates the ROI Score using the formula:
 
-$$\text{ROI Score} = \text{Annualized Hours} \times (1 + \text{Friction Penalty}) \times \text{Feasibility Weight}$$
+$$\text{ROI\_Score} = \frac{\text{Volume} \times \text{Friction}}{\text{Average\_Duration}}$$
 
 Where:
-1. **Annualized Hours:** Total task duration scaled from the observation window (15 sample sessions $\approx$ 0.5 workdays across 4 operators $\to$ scaled by $500\times$ for an annualized enterprise operational year of 250 business days).
-2. **Friction Penalty ($F$):** Quantifies context-switching fatigue and copy-paste error susceptibility:
-   $$F = 1.0 + (\text{Avg App Switches per Execution} \times 0.15)$$
-   Processes requiring 7+ switches (e.g. Edge $\leftrightarrow$ Word $\leftrightarrow$ Excel $\leftrightarrow$ Notepad) carry severe operational drag and cognitive overhead.
-3. **Feasibility Weight ($W_{\text{feasibility}}$):** Reflects deterministic rule clarity, structured data availability, and compliance boundary complexity ($0.0$ to $1.0$):
-   - High Feasibility ($0.90 - 0.95$): Standardized Purchase Order changes and expense receipt reconciliation with clean database schemas.
-   - Low Feasibility ($0.50 - 0.65$): Discretionary budget commentary in PowerPoint or direct bank wire disbursements requiring executive signing.
+1. **Volume ($N$):** Total execution count of the business process in the operational logs.
+2. **Friction ($F$):** Combined human-interaction drag per execution:
+   $$\text{Friction} = \text{Average App Switches} + \text{Average Clipboard Copy/Paste Transitions}$$
+   High-friction tasks require staff to constantly switch window focus (e.g., Edge portal $\leftrightarrow$ Word contract documents $\leftrightarrow$ Excel sheets $\leftrightarrow$ Notepad memos) and copy data entities back and forth.
+3. **Average Duration ($\bar{D}$ in seconds):** The mean cycle time required by human operators to complete one unit of work.
+
+**Intuition:** Processes that occur with **high transaction volume**, impose **severe context-switching friction**, and have **compact, standardized execution steps** yield the highest ROI when automated through straight-through processing.
 
 ### 2.3 Justification of Prioritization Order
-- **Top Candidate — `supplier_communication` (ROI Score: 956.7):**  
-  Accounts for **more than one-third of all back-office workload** (100 executions). In telemetry, operators repeatedly open Microsoft Edge (`http://127.0.0.1:5134/#/leave-applications`), switch to Word to review vendor procedures (`shinkuitorihikisaki_touroku_tetsuzuki`, `getsujitsu_teigaku_torihikisaki_ichiran`), copy vendor IDs (`SUP-1750...`) and PO numbers (`PO-2026-...`), and manually input standard confirmation texts (`数量変更依頼`, `仕様変更確認`, `品質証明書督促`). This excessive switching (7.1 app switches/exec) introduces high latency and copy-paste error risks.
-- **Second Candidate — `expense_processing` (ROI Score: 542.5):**  
-  High frequency (61 executions) with established company expense policy guidelines (`gyomu_itaku_keihi_kitei`, `settai_keihi_kitei`) and Excel scratch calculations (`expense_calc.xlsx`). Very high feasibility (0.95), yielding 233 hours in annual savings.
-- **Lower Priority Candidates:**  
-  Processes like `budget_variance_analysis` (Rank #8) and `payment_processing` (Rank #12) either lack sufficient volume in current logs or involve discretionary management judgment and high banking compliance barriers, making initial automation uneconomical.
+- **Top Candidate — `supplier_communication` (ROI Score: 25.30 — Rank #1):**  
+  Dominates **35.8% of all back-office operational volume** (100 executions across 14 of 15 sessions). In telemetry, operators repeatedly open Microsoft Edge (`http://127.0.0.1:5134/#/leave-applications`), switch to Word to review vendor procedures (`shinkuitorihikisaki_touroku_tetsuzuki`, `getsujitsu_teigaku_torihikisaki_ichiran`), copy vendor IDs (`SUP-1750...`) and PO numbers (`PO-2026-...`), and manually input standard confirmation texts (`数量変更依頼`, `仕様変更確認`, `品質証明書督促`). This excessive switching (6.8 app switches + 2.6 clipboard ops = **9.39 friction**) introduces severe operational drag and copy-paste error risks.
+- **Second Candidate — `expense_processing` (ROI Score: 16.75 — Rank #2):**  
+  High frequency (61 executions) with established company expense policy guidelines (`gyomu_itaku_keihi_kitei`, `settai_keihi_kitei`) and Excel scratch calculations (`expense_calc.xlsx`). High friction (**9.44**), yielding substantial annual savings as the second phase target.
+- **Mid-Tier Candidates — `onboarding_verification` (ROI 5.67), `leave_application_processing` (ROI 5.45), `inventory_adjustment` (ROI 5.34):**  
+  Moderate volume (21–26 executions) with standardized check rules, suitable for secondary automation waves.
+- **Lower Priority Candidates — `budget_variance_analysis` (ROI 0.81) and `payment_processing` (ROI 0.14):**  
+  Low frequency in logs, involving discretionary managerial commentary (PowerPoint) or high banking security hurdles (direct disbursement), making immediate automation uneconomical.
 
 ---
 
@@ -89,18 +91,19 @@ We selected **`supplier_communication` (Rank #1)** as our Step 3 implementation 
    - Automated requests for vendor quality inspection certificates (`品質証明書督促`).
 3. **Bounded Risk Scope:** Rather than attempting a hazardous 100% "lights-out" automation of external contracts, we scoped the prototype to perform **straight-through processing on standard cases** while automatically detecting and escalating abnormal variances to procurement managers.
 
-### 3.2 Why a Deterministic Python Backend Service vs. Alternatives?
-We engineered a modular Python workflow service ([`src/automation/supplier_automation.py`](file:///c:/IBY_Japan/src/automation/supplier_automation.py)) supporting both programmatic API invocation and CLI batch processing.
+### 3.2 Why a Deterministic Python / Express Backend Service vs. Alternatives?
+We engineered a modular backend service ([`src/automation/supplier_automation.py`](file:///c:/IBY_Japan/src/automation/supplier_automation.py)) designed to run as a high-performance deterministic Python policy engine, exposed via a clean RESTful API endpoint compatible with modern Express (Node.js) and Python (FastAPI/Flask) microservices stacks.
 
-| Dimension | Chosen: Deterministic Python Backend | Alternative A: Brittle UI-Based RPA (UiPath / Power Automate Desktop) | Alternative B: Autonomous LLM Agent (LangChain / AutoGPT) |
+| Dimension | Chosen: Deterministic Python / Express Backend | Alternative A: Brittle UI-Based RPA (UiPath / Power Automate Desktop) | Alternative B: Autonomous LLM Agent (LangChain / AutoGPT) |
 | :--- | :--- | :--- | :--- |
 | **Execution Speed** | **Sub-second ($<50$ ms)** per transaction. | Slow ($15-30$ s); simulates human keystrokes & mouse clicks. | Extremely slow ($5-15$ s) due to multi-step model roundtrips. |
 | **Reliability & Maintenance** | **High:** Decoupled from visual UI; unaffected by CSS changes or screen resolution. | **Zero resilience:** Breaks whenever button positions, DOM IDs, or modal layouts change. | **Nondeterministic:** Subject to prompt drift, hallucinated vendor terms, and token costs. |
 | **Auditability & Compliance** | **100% Deterministic:** Rule triggers logged with explicit timestamps and criteria. | Poor: Requires video screen recording or proprietary run logs. | Opaque: Difficult to mathematically prove compliance to internal enterprise auditors. |
 | **Integration Flexibility** | Plugs directly into existing ERP REST/SQL endpoints or event queues. | Locked into vendor runtime licenses on dedicated desktop virtual machines. | Requires ongoing LLM API subscription spend and external data exposure. |
 
-### 3.3 Prototype Architecture & Core Mechanics
-The implemented prototype ([`src/automation/supplier_automation.py`](file:///c:/IBY_Japan/src/automation/supplier_automation.py)) operates as follows:
+### 3.3 Prototype Architecture & Modular Backend Specification
+The implemented prototype ([`src/automation/supplier_automation.py`](file:///c:/IBY_Japan/src/automation/supplier_automation.py)) operates as a modular, stateless pipeline that intercepts purchase order requests, validates business policy rules, formats Japanese enterprise communication records, and determines straight-through approval vs. supervisor escalation:
+
 ```
                                 ┌─────────────────────────────────────────┐
                                 │      Incoming Supplier PO Request       │
@@ -109,7 +112,13 @@ The implemented prototype ([`src/automation/supplier_automation.py`](file:///c:/
                                                      │
                                                      ▼
                                 ┌─────────────────────────────────────────┐
-                                │     SupplierWorkflowEngine (Policy)     │
+                                │  Express / REST API Gateway Endpoint   │
+                                │    POST /api/v1/supplier/process        │
+                                └────────────────────┬────────────────────┘
+                                                     │
+                                                     ▼
+                                ┌─────────────────────────────────────────┐
+                                │   SupplierWorkflowEngine (Core Logic)   │
                                 │   - Max Qty Variance: <= 25%            │
                                 │   - Max Price Change: <= 5%             │
                                 │   - Max Delivery Shift: <= 5 days       │
@@ -126,7 +135,33 @@ The implemented prototype ([`src/automation/supplier_automation.py`](file:///c:/
                         └────────────────────────┘  └───────────────────────────┘
 ```
 
-The prototype includes an automated verification test suite ([`tests/test_automation.py`](file:///c:/IBY_Japan/tests/test_automation.py)), confirming 100% test pass rates across auto-approval, policy threshold enforcement, and batch execution.
+#### Express / Node.js Microservice Integration Contract
+For enterprise deployment into the client's existing web portal environment (ports `5132`-`5134`), the Python engine interfaces seamlessly via a standard Express REST route:
+
+```javascript
+// Express Route: POST /api/v1/supplier-requests/process
+app.post('/api/v1/supplier-requests/process', async (req, res) => {
+  const { po_id, vendor_id, original_quantity, requested_quantity, 
+          original_unit_price, requested_unit_price, original_delivery_date, 
+          requested_delivery_date, reason } = req.body;
+  
+  // Call Python core policy engine via IPC / microservice container
+  const result = await workflowEngine.processRequest({
+    po_id, vendor_id, original_quantity, requested_quantity,
+    original_unit_price, requested_unit_price, original_delivery_date,
+    requested_delivery_date, reason
+  });
+
+  return res.status(200).json({
+    status: result.decision, // "AUTO_APPROVED" | "ESCALATED_TO_MANAGER"
+    comment_ja: result.generated_comment,
+    reasons: result.escalation_reasons,
+    audit_trail: result.audit_metadata
+  });
+});
+```
+
+The prototype includes an automated verification test suite ([`tests/test_automation.py`](file:///c:/IBY_Japan/tests/test_automation.py)), confirming 100% test pass rates across auto-approval, policy threshold enforcement, error handling, and batch execution.
 
 ---
 

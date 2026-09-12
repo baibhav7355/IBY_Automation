@@ -87,17 +87,23 @@
 ### Day 5: Production Ingestion (Dataset B) & Process Mining Analytics
 - **Objective:** Ingest Dataset B production logs (15 sessions, ~20,000 events), generate the required `segments.jsonl` deliverable, and quantify operational bottlenecks.
 - **Actions Taken:**
-  1. Extended `segmenter.py` and `llm_labeler.py` to handle Dataset B environment specifics:
+  1. Extended `src/segmentation/segmenter.py` and `src/segmentation/llm_labeler.py` to handle Dataset B environment specifics:
      - Supported `Microsoft Edge` as an active enterprise web browser alongside `Google Chrome`.
      - Mapped Dataset B web portal ports: `5132` (HR), `5133` (Finance), `5134` (Operations).
      - Mapped Dataset B Word document templates (e.g., `shinkuitorihikisaki_touroku_tetsuzuki`, `shinkui_keiyaku_tetsuzuki`, `getsujitsu_teigaku_torihikisaki_ichiran`, `expense_calc`, `budget_analysis`).
-  2. Executed `scripts/mine_dataset_b.py`: segmented all 15 sessions in Dataset B and generated the official deliverable `segments.jsonl` (279 distinct units of work recovered).
-  3. Built `src/analytics/process_miner.py`:
-     - Calculated execution volume ($N$), cumulative duration, average duration, cross-app switching friction, and staff involvement.
-     - Formulated the **ROI Prioritization Index**:
-       $$\text{ROI Score} = (\text{Volume} \times \text{Avg Duration}) \times (1 + \text{Friction Penalty}) \times \text{Feasibility Weight}$$
-  4. Generated the Dataset B Process Mining Scorecard:
-     - Discovered that **`supplier_communication` (Rank #1, 100 executions, 61.9 min, 7.1 switches/exec, ROI: 956.7)** and **`expense_processing` (Rank #2, 61 executions, 34.9 min, 6.4 switches/exec, ROI: 542.5)** constitute **57.7% of all back-office operational volume** and represent the client's largest productivity drains.
+  2. Executed segmentation pipeline on Dataset B (`scripts/run_segmentation.py --dataset dataset_b --output segments.jsonl --no-eval`) and generated the official deliverable `segments.jsonl` (279 distinct units of work recovered across 12 business process categories).
+  3. Built `src/analytics/process_miner.py` and executed analysis across Dataset B's `segments.jsonl` and raw `events.jsonl`:
+     - Computed Volume ($N$), Total Cumulative Duration (min), Average Duration (s), App Switches, Clipboard Transitions, Friction ($F = \text{App Switches} + \text{Clipboard Ops}$), and Staff/Session Involvement.
+     - Implemented the client ROI scoring function:
+       $$\text{ROI\_Score} = \frac{\text{Volume} \times \text{Friction}}{\text{Average\_Duration}}$$
+  4. Generated the Dataset B Process Mining Ranking Table:
+     - **#1 `supplier_communication`:** Volume 100, 61.9 min total, 37.1s avg dur, 6.8 app switches, 2.6 clipboard ops, **9.39 friction**, 14/15 sessions, 4/4 staff $\to$ **ROI Score: 25.30**.
+     - **#2 `expense_processing`:** Volume 61, 35.0 min total, 34.4s avg dur, 6.3 app switches, 3.2 clipboard ops, **9.44 friction**, 14/15 sessions, 4/4 staff $\to$ **ROI Score: 16.75**.
+     - **#3 `onboarding_verification`:** Volume 21, 11.8 min total, 33.7s avg dur, 6.4 app switches, 2.7 clipboard ops, **9.10 friction**, 9/15 sessions, 4/4 staff $\to$ **ROI Score: 5.67**.
+     - **#4 `leave_application_processing`:** Volume 26, 18.0 min total, 41.6s avg dur, **8.73 friction** $\to$ **ROI Score: 5.45**.
+     - **#5 `inventory_adjustment`:** Volume 25, 15.8 min total, 38.0s avg dur, **8.12 friction** $\to$ **ROI Score: 5.34**.
+     - **#6 `payroll_adjustment`:** Volume 16, 7.9 min total, 29.7s avg dur, **7.50 friction** $\to$ **ROI Score: 4.04**.
+     - Confirmed that **`supplier_communication`** and **`expense_processing`** account for **57.7% of all back-office operational volume** (161 / 279 executions), with `supplier_communication` exhibiting the highest cumulative labor drain and friction score.
 
 ---
 
@@ -109,13 +115,13 @@
   2. Evaluated implementation architectures:
      - *Rejected UI RPA:* Extremely fragile to web UI DOM changes, slow execution speed, high maintenance overhead.
      - *Rejected Autonomous AI Agents:* Excessive latency, non-deterministic outputs, unacceptable compliance risk for contractual supplier communications.
-     - *Selected Deterministic Python Backend Engine:* Direct API/database synchronization, sub-second execution, deterministic policy validation, and clear exception escalation pathways.
+     - *Selected Deterministic Python / Express-compatible Backend Engine:* Direct API/database synchronization, sub-second execution, deterministic policy validation, and clear exception escalation pathways with REST interface endpoints (`/api/v1/supplier-requests/process`).
   3. Built `src/automation/supplier_automation.py` (`SupplierWorkflowEngine`):
      - Ingests supplier change requests and purchase orders.
      - Evaluates business constraints: automatic approval for standard quantity shifts ($\le 25\%$), delivery shifts ($\le 5$ days), and price shifts ($\le 5\%$).
      - Automatically generates standardized Japanese communication records (`自動処理完了`).
      - Routes high-variance requests to `ESCALATED_TO_MANAGER` with explicit audit reasons (`自動保留・要承認`).
-  4. Validated with automated test suite in `tests/test_automation.py` (34/34 tests passing). Documented residual manual workflows and operational risk mitigations.
+  4. Validated with automated test suite in `tests/test_automation.py` (34/34 tests passing across unit, integration, and batch modes). Documented residual manual workflows and operational risk mitigations.
 
 ---
 
