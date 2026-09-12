@@ -107,34 +107,41 @@ c:/IBY_Japan/
 
 All scripts are configured to run out-of-the-box in standard Python 3.10+ environments:
 
-### 1. Run Automated Submission Verification (All 5 Checks)
+### 1. Launch Interactive Streamlit Executive Dashboard & Live Prototype
+```bash
+python -m streamlit run app.py --server.port 8502
+```
+*Launches the full interactive web application featuring the ROI Prioritization Dashboard, Telemetry Explorer, Live Policy Engine Demo with Japanese translation outputs, and Sprint Audit.*
+
+### 2. Run Automated Submission Verification (All 5 Checks)
 ```bash
 python scripts/verify_submission.py
 ```
 *Programmatically validates `segments.jsonl` schema, `final_report.md`, `work_log.md`, prototype execution, and all 36 tests.*
 
-### 2. Run Step 3 Automation Prototype Demo
+### 3. Run Step 3 Automation Prototype Demo (CLI Mode)
 ```bash
 python src/automation/supplier_automation.py --demo
 ```
 *Executes the supplier communication workflow engine against sample Dataset B transactions, displaying auto-approvals, Japanese confirmation text, and managerial escalation routing.*
 
-### 3. Run the Automated Test Suite
+### 4. Run the Automated Test Suite
 ```bash
 python -m pytest -v
 ```
 *Runs all 36 unit and integration tests across pipeline, segmenter, evaluator, and automation modules (100% pass rate).*
 
-### 4. Run Dataset B Process Mining
+### 5. Run Dataset B Process Mining
 ```bash
 python scripts/mine_dataset_b.py
 ```
 *Analyzes `segments.jsonl` and Dataset B events, generating friction scores and the ROI prioritization ranking.*
 
-### 5. Re-run Segmentation Pipeline on Dataset B
+### 6. Re-run Segmentation Pipeline on Dataset B
 ```bash
 python scripts/run_segmentation.py --dataset dataset_b --output segments.jsonl --no-eval
 ```
+
 *Executes the Golden Thread state machine and semantic merger across all 15 sessions in `dataset_b/`.*
 
 ---
