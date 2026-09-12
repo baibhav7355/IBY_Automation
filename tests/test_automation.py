@@ -47,8 +47,57 @@ def test_supplier_workflow_engine_escalation():
     assert "自動保留・要承認" in res.generated_comment_ja
 
 
+def test_supplier_workflow_engine_escalations_all_rules():
+    engine = SupplierWorkflowEngine(dry_run=True)
+    # 1. Delivery delay > 5 days
+    req_delay = SupplierRequest(
+        po_id="PO-DELAY-01",
+        vendor_id="V-300",
+        vendor_name="Vendor Delay",
+        request_type="delivery_shift",
+        item_code="ITM-3",
+        original_qty=50,
+        requested_qty=50,
+        unit_price=1000.0,
+        price_change_pct=0.0,
+        delivery_date_shift_days=8,
+    )
+    res_delay = engine.process_request(req_delay)
+    assert res_delay.status == "ESCALATED_TO_MANAGER"
+    assert "Delivery delay" in res_delay.escalation_reason
+
+    # 2. Qty variance > 25%
+    req_qty = SupplierRequest(
+        po_id="PO-QTY-01",
+        vendor_id="V-400",
+        vendor_name="Vendor Qty",
+        request_type="quantity_change",
+        item_code="ITM-4",
+        original_qty=100,
+        requested_qty=150,  # 50% change > 25%
+        unit_price=1000.0,
+        price_change_pct=0.0,
+        delivery_date_shift_days=0,
+    )
+    res_qty = engine.process_request(req_qty)
+    assert res_qty.status == "ESCALATED_TO_MANAGER"
+    assert "Quantity variance" in res_qty.escalation_reason
+
+
 def test_run_sample_automation_batch():
     output = run_sample_automation()
     assert output["processed_count"] == 3
     assert output["auto_approved_count"] == 2
     assert output["escalated_count"] == 1
+
+
+def test_main_cli_demo(monkeypatch, capsys):
+    import sys
+    from src.automation.supplier_automation import main
+
+    monkeypatch.setattr(sys, "argv", ["supplier_automation.py", "--demo"])
+    main()
+    captured = capsys.readouterr()
+    assert "IBY JAPAN ENTERPRISE AUTOMATION ENGINE" in captured.out
+    assert "[PROTOTYPE EXECUTION SCORECARD]" in captured.out
+

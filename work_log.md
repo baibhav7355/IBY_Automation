@@ -121,7 +121,7 @@
      - Evaluates business constraints: automatic approval for standard quantity shifts ($\le 25\%$), delivery shifts ($\le 5$ days), and price shifts ($\le 5\%$).
      - Automatically generates standardized Japanese communication records (`自動処理完了`).
      - Routes high-variance requests to `ESCALATED_TO_MANAGER` with explicit audit reasons (`自動保留・要承認`).
-  4. Validated with automated test suite in `tests/test_automation.py` (34/34 tests passing across unit, integration, and batch modes). Documented residual manual workflows and operational risk mitigations.
+  4. Validated with automated test suite in `tests/test_automation.py` (36/36 tests passing across unit, integration, threshold boundary conditions, and CLI demo modes). Documented residual manual workflows and operational risk mitigations.
 
 ---
 

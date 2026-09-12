@@ -179,7 +179,7 @@ Automation should eliminate mindless repetitive drudgery, not eliminate human ov
 ### 4.2 Realistic Net Efficiency Gains
 Based on telemetry metrics observed in Dataset B:
 - **Direct Labor Recovery:**
-  - Standard transactions require **37.1 seconds of focused manual labor** and **7.1 application switches**.
+  - Standard transactions require **37.1 seconds of focused manual labor** and **6.8 application switches plus 2.6 clipboard copy/paste transitions (9.39 friction score)**.
   - The automation engine processes these transactions in **$<50$ milliseconds**.
   - Across the annualized baseline, automating 80% of routine supplier communications directly recovers **413 net hours per year** for the procurement and logistics team.
 - **Cycle Time Acceleration:**
