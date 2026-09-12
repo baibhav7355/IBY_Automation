@@ -112,24 +112,55 @@ class SupplierWorkflowEngine:
         else:
             status = "AUTO_APPROVED"
             action = "Auto-dispatched vendor confirmation"
+            # Format clean vendor display name (avoid duplicate 御中 / 宛)
+            clean_name = req.vendor_name.rstrip("御中宛")
+            vendor_display = f"{clean_name}御中"
+
             if req.request_type == "quantity_change":
+                if req.requested_qty == req.original_qty:
+                    comment = (
+                        f"【自動処理完了】{vendor_display} 発注番号:{req.po_id}の数量を確認しました。（No Change in Quantity）"
+                    )
+                else:
+                    comment = (
+                        f"【自動処理完了】{vendor_display} 発注番号:{req.po_id}の数量変更依頼を承認しました。"
+                        f"（変更前:{req.original_qty} → 変更後:{req.requested_qty}）"
+                    )
+            elif req.request_type == "price_revision":
+                if req.price_change_pct == 0.0:
+                    comment = (
+                        f"【自動処理完了】{vendor_display} 発注番号:{req.po_id}の価格を確認しました。（No Change in Price）"
+                    )
+
+
+                else:
+                    sign = "+" if req.price_change_pct > 0 else ""
+                    revised_price = req.unit_price * (1.0 + req.price_change_pct / 100.0)
+                    comment = (
+                        f"【自動処理完了】{vendor_display} 発注番号:{req.po_id}の単価改定依頼（{sign}{req.price_change_pct:.1f}%、改定単価:約¥{revised_price:,.0f}）を承認しました。"
+                    )
+
+            elif req.request_type in ("item_specification_change", "spec_change", "product_spec_change"):
                 comment = (
-                    f"【自動処理完了】{req.vendor_name}御中 発注番号:{req.po_id}の数量変更依頼を承認しました。"
-                    f"（変更前:{req.original_qty} → 変更後:{req.requested_qty}）"
+                    f"【自動処理完了】{vendor_display} 発注番号:{req.po_id}の製品仕様変更確認を登録しました。"
                 )
-            elif req.request_type == "spec_change":
+            elif req.request_type in ("quality_certificate_request", "cert_request", "certificate_request"):
                 comment = (
-                    f"【自動処理完了】{req.vendor_name}御中 発注番号:{req.po_id}の仕様変更確認を登録しました。"
+                    f"【自動処理完了】{vendor_display} 発注番号:{req.po_id}に関する品質証明書の送付依頼を発行しました。"
                 )
-            elif req.request_type == "cert_request":
+
+            elif req.request_type in ("none", "no_request", "nothing"):
                 comment = (
-                    f"【自動処理完了】{req.vendor_name}御中 発注番号:{req.po_id}に関する品質証明書の送付依頼を発行しました。"
+                    f"【変更なし・確認完了】{vendor_display} 発注番号:{req.po_id}に変更依頼はありません。既存契約条件のまま継続処理します。"
                 )
             else:
                 comment = (
-                    f"【自動処理完了】{req.vendor_name}御中 発注番号:{req.po_id}の取引先連絡を正常に処理しました。"
+                    f"【自動処理完了】{vendor_display} 発注番号:{req.po_id}の取引先連絡を正常に処理しました。"
                 )
             reason = None
+
+
+
 
         result = AutomationResult(
             po_id=req.po_id,

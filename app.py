@@ -279,113 +279,154 @@ elif menu == "🤖 Live Automation Prototype (Step 3)":
     # Engine Config / Preset Cases
     col_config, col_live = st.columns([1, 1])
 
+    PRESETS = {
+        "Preset 1: Standard Quantity Adjustment (+10% -> Auto-Approved)": {
+            "po": "PO-2026-469",
+            "vendor": "SUP-1750",
+            "name": "千葉金属工業",
+            "type": "quantity_change",
+            "orig_qty": 100,
+            "req_qty": 110,
+            "price": 520.0,
+            "price_pct": 0.0,
+            "shift": 1,
+            "memo": "納期の微調整",
+        },
+        "Preset 2: Quality Certificate Request (Standard -> Auto-Approved)": {
+            "po": "PO-2026-681",
+            "vendor": "SUP-3310",
+            "name": "シャープ株式会社",
+            "type": "quality_certificate_request",
+            "orig_qty": 50,
+
+
+            "req_qty": 50,
+            "price": 1450.0,
+            "price_pct": 0.0,
+            "shift": 0,
+            "memo": "品質証明書送付依頼",
+        },
+        "Preset 3: Contract Price Revision (+15% > 5% limit -> Escalated)": {
+            "po": "PO-2026-512",
+            "vendor": "SUP-2890",
+            "name": "三菱電機株式会社",
+            "type": "price_revision",
+            "orig_qty": 200,
+            "req_qty": 200,
+            "price": 1200.0,
+            "price_pct": 15.0,
+            "shift": 0,
+            "memo": "原材料高騰に伴う単価改定要請",
+        },
+        "Preset 4: Supply Chain Delivery Delay (+10 days > 5 limit -> Escalated)": {
+            "po": "PO-2026-904",
+            "vendor": "SUP-4011",
+            "name": "日立金属物流部",
+            "type": "quantity_change",
+            "orig_qty": 150,
+            "req_qty": 150,
+            "price": 800.0,
+            "price_pct": 0.0,
+            "shift": 10,
+            "memo": "船便遅延による納期変更申入",
+        },
+        "Custom Configuration": {
+            "po": "PO-2026-CUSTOM",
+            "vendor": "SUP-9999",
+            "name": "取引先企業",
+            "type": "quantity_change",
+            "orig_qty": 100,
+
+            "req_qty": 100,
+            "price": 1000.0,
+            "price_pct": 0.0,
+            "shift": 0,
+            "memo": "個別調整",
+        },
+    }
+
+    def apply_selected_preset():
+        sel = st.session_state.get("selected_preset_key", list(PRESETS.keys())[0])
+        p = PRESETS[sel]
+        st.session_state["input_po"] = p["po"]
+        st.session_state["input_name"] = p["name"]
+        st.session_state["input_type"] = p["type"]
+        st.session_state["input_orig_qty"] = p["orig_qty"]
+        st.session_state["input_req_qty"] = p["req_qty"]
+        st.session_state["input_price_pct"] = float(p["price_pct"])
+        st.session_state["input_shift"] = int(p["shift"])
+
+    # Initialize session state if first load
+    if "input_po" not in st.session_state:
+        st.session_state["selected_preset_key"] = list(PRESETS.keys())[0]
+        apply_selected_preset()
+
     with col_config:
         st.subheader("1. Select or Configure Request Payload")
         preset = st.selectbox(
             "Load Transaction Archetype Preset:",
-            [
-                "Preset 1: Standard Quantity Adjustment (+10% -> Auto-Approved)",
-                "Preset 2: Quality Certificate Request (Standard -> Auto-Approved)",
-                "Preset 3: Contract Price Revision (+15% > 5% limit -> Escalated)",
-                "Preset 4: Supply Chain Delivery Delay (+10 days > 5 limit -> Escalated)",
-                "Custom Configuration",
-            ],
+            options=list(PRESETS.keys()),
+            key="selected_preset_key",
+            on_change=apply_selected_preset,
         )
 
-        # Populate defaults based on preset
-        if "Preset 1" in preset:
-            p_po = "PO-2026-469"
-            p_vendor = "SUP-1750"
-            p_name = "千葉金属工業御中"
-            p_type = "quantity_change"
-            p_orig_qty = 100
-            p_req_qty = 110
-            p_price = 520.0
-            p_price_pct = 0.0
-            p_shift = 1
-            p_memo = "納期の微調整"
-        elif "Preset 2" in preset:
-            p_po = "PO-2026-681"
-            p_vendor = "SUP-3310"
-            p_name = "シャープ株式会社御中"
-            p_type = "cert_request"
-            p_orig_qty = 50
-            p_req_qty = 50
-            p_price = 1450.0
-            p_price_pct = 0.0
-            p_shift = 0
-            p_memo = "品質証明書送付依頼"
-        elif "Preset 3" in preset:
-            p_po = "PO-2026-512"
-            p_vendor = "SUP-2890"
-            p_name = "三菱電機株式会社宛"
-            p_type = "price_revision"
-            p_orig_qty = 200
-            p_req_qty = 200
-            p_price = 1200.0
-            p_price_pct = 15.0  # Exceeds 5%
-            p_shift = 0
-            p_memo = "原材料高騰に伴う単価改定要請"
-        elif "Preset 4" in preset:
-            p_po = "PO-2026-904"
-            p_vendor = "SUP-4011"
-            p_name = "日立金属物流部"
-            p_type = "quantity_change"
-            p_orig_qty = 150
-            p_req_qty = 150
-            p_price = 800.0
-            p_price_pct = 0.0
-            p_shift = 10  # Exceeds 5 days
-            p_memo = "船便遅延による納期変更申入"
-        else:
-            p_po = "PO-2026-CUSTOM"
-            p_vendor = "SUP-9999"
-            p_name = "取引先企業"
-            p_type = "quantity_change"
-            p_orig_qty = 100
-            p_req_qty = 120
-            p_price = 1000.0
-            p_price_pct = 4.0
-            p_shift = 2
-            p_memo = "個別調整"
+        in_po = st.text_input("Purchase Order ID (PO):", key="input_po")
+        in_vendor_name = st.text_input("Supplier Name (日本語):", key="input_name")
+        
+        type_options = [
+            "quantity_change",
+            "price_revision",
+            "item_specification_change",
+            "quality_certificate_request",
+            "none",
+        ]
+        
+        type_labels = {
+            "quantity_change": "📦 Quantity Change (数量変更)",
+            "price_revision": "💰 Price Revision (単価改定)",
+            "item_specification_change": "🔧 Item Specification Change (製品仕様変更)",
+            "quality_certificate_request": "📜 Quality Certificate Request (品質証明書依頼)",
+            "none": "✅ None (No Change / 変更なし)",
+        }
 
-        in_po = st.text_input("Purchase Order ID (PO):", value=p_po)
-        in_vendor_name = st.text_input("Supplier Name (日本語):", value=p_name)
         in_req_type = st.selectbox(
             "Request Type:",
-            ["quantity_change", "price_revision", "spec_change", "cert_request"],
-            index=["quantity_change", "price_revision", "spec_change", "cert_request"].index(p_type) if p_type in ["quantity_change", "price_revision", "spec_change", "cert_request"] else 0,
+            options=type_options,
+            format_func=lambda x: type_labels.get(x, x),
+            key="input_type",
         )
+
 
         c_q1, c_q2 = st.columns(2)
         with c_q1:
-            in_orig_qty = st.number_input("Original Quantity:", min_value=1, value=p_orig_qty)
+            in_orig_qty = st.number_input("Original Quantity:", min_value=1, key="input_orig_qty")
         with c_q2:
-            in_req_qty = st.number_input("Requested Quantity:", min_value=1, value=p_req_qty)
+            in_req_qty = st.number_input("Requested Quantity:", min_value=1, key="input_req_qty")
 
         c_p1, c_p2 = st.columns(2)
         with c_p1:
-            in_price_pct = st.slider("Price Variance (%):", min_value=0.0, max_value=30.0, value=float(p_price_pct), step=0.5)
+            in_price_pct = st.slider("Price Variance (%):", min_value=0.0, max_value=30.0, step=0.5, key="input_price_pct")
         with c_p2:
-            in_shift = st.slider("Delivery Shift (Days):", min_value=0, max_value=20, value=int(p_shift), step=1)
+            in_shift = st.slider("Delivery Shift (Days):", min_value=0, max_value=20, step=1, key="input_shift")
 
         run_btn = st.button("🚀 Execute Policy Engine", type="primary", use_container_width=True)
+        st.caption("💡 Adjust any field above or click to trigger manual policy re-evaluation.")
 
     with col_live:
         st.subheader("2. Real-Time Engine Decision & Audit Log")
         
         req = SupplierRequest(
             po_id=in_po,
-            vendor_id=p_vendor,
+            vendor_id="SUP-AUTO",
             vendor_name=in_vendor_name,
             request_type=in_req_type,
             item_code="ITM-7701",
             original_qty=in_orig_qty,
             requested_qty=in_req_qty,
-            unit_price=p_price,
+            unit_price=1000.0,
             price_change_pct=in_price_pct,
             delivery_date_shift_days=in_shift,
-            memo=p_memo,
+            memo="リアルタイム自動判定",
         )
 
         engine = SupplierWorkflowEngine()
@@ -421,6 +462,7 @@ elif menu == "🤖 Live Automation Prototype (Step 3)":
         st.write(f"- **Quantity Variance:** `{qty_diff:.1f}%` (Policy Limit: $\\le 25\\%$) -> {'✔ Passed' if qty_diff <= 25.0 else '❌ Breached'}")
         st.write(f"- **Price Change:** `{in_price_pct:.1f}%` (Policy Limit: $\\le 5\\%$) -> {'✔ Passed' if in_price_pct <= 5.0 else '❌ Breached'}")
         st.write(f"- **Delivery Shift:** `{in_shift} days` (Policy Limit: $\\le 5$ days) -> {'✔ Passed' if in_shift <= 5 else '❌ Breached'}")
+
 
 
 # -----------------------------------------------------------------------------
