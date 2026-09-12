@@ -61,3 +61,8 @@ Thumbs.db
 
 # Scratch exploration scripts
 scripts/scratch_*.py
+
+# Datasets (large binary screenshot payloads ~12GB; omitted from Git tracking)
+dataset_a/
+dataset_b/
+
