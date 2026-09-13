@@ -149,7 +149,7 @@ def verify_prototype() -> bool:
         req_standard = SupplierRequest(
             po_id="PO-2026-TEST-OK",
             vendor_id="SUP-TEST-100",
-            vendor_name="千葉金属工業",
+            vendor_name="Chiba Metal Industries",
             request_type="quantity_change",
             item_code="ITM-9912",
             original_qty=100,
@@ -157,7 +157,7 @@ def verify_prototype() -> bool:
             unit_price=500.0,
             price_change_pct=2.0,  # +2% variance (<= 5%)
             delivery_date_shift_days=2,  # +2 days (<= 5 days)
-            memo="納期の微調整"
+            memo="Delivery adjustment",
         )
         res_ok = engine.process_request(req_standard)
         passed_ok = res_ok.status == "AUTO_APPROVED"
@@ -167,7 +167,7 @@ def verify_prototype() -> bool:
         req_breach = SupplierRequest(
             po_id="PO-2026-TEST-BREACH",
             vendor_id="SUP-TEST-200",
-            vendor_name="三菱電機株式会社",
+            vendor_name="Mitsubishi Electric Corporation",
             request_type="price_revision",
             item_code="ITM-4421",
             original_qty=100,
@@ -175,7 +175,7 @@ def verify_prototype() -> bool:
             unit_price=1000.0,
             price_change_pct=15.0,  # +15% variance (> 5%)
             delivery_date_shift_days=0,
-            memo="原材料高騰に伴う単価改定"
+            memo="Price revision due to raw material costs",
         )
         res_breach = engine.process_request(req_breach)
         passed_breach = res_breach.status == "ESCALATED_TO_MANAGER"
@@ -188,12 +188,12 @@ def verify_prototype() -> bool:
         exp_ok = exp_engine.process_claim(ExpenseClaimRequest(
             claim_id="EXP-VERIFY-01",
             employee_id="EMP-01",
-            employee_name="山田 太郎",
-            department="営業部",
+            employee_name="Taro Yamada",
+            department="Corporate Sales",
             expense_category="entertainment",
             amount=15000.0,
             attendee_count=2,  # ¥7,500 <= ¥10,000
-            has_receipt=True
+            has_receipt=True,
         ))
         passed_exp_ok = exp_ok.status == "AUTO_APPROVED"
         print(f"  {check_mark(passed_exp_ok)} Expense Standard Claim -> {exp_ok.status} (Expected: AUTO_APPROVED)")
@@ -201,12 +201,12 @@ def verify_prototype() -> bool:
         exp_breach = exp_engine.process_claim(ExpenseClaimRequest(
             claim_id="EXP-VERIFY-02",
             employee_id="EMP-02",
-            employee_name="佐藤 一郎",
-            department="企画部",
+            employee_name="Ichiro Sato",
+            department="Corporate Strategy",
             expense_category="entertainment",
             amount=30000.0,
             attendee_count=2,  # ¥15,000 > ¥10,000 limit
-            has_receipt=True
+            has_receipt=True,
         ))
         passed_exp_breach = exp_breach.status == "ESCALATED_TO_MANAGER"
         print(f"  {check_mark(passed_exp_breach)} Expense Limit Breach -> {exp_breach.status} (Expected: ESCALATED_TO_MANAGER)")

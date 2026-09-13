@@ -22,7 +22,7 @@ def test_expense_workflow_auto_approval():
     res = engine.process_claim(req)
     assert res.status == "AUTO_APPROVED"
     assert res.escalation_reason is None
-    assert "経理承認" in res.generated_comment_ja
+    assert "ACCOUNTING APPROVED" in res.generated_comment_ja
 
 
 def test_expense_workflow_entertainment_escalation():
@@ -40,8 +40,8 @@ def test_expense_workflow_entertainment_escalation():
     res = engine.process_claim(req)
     assert res.status == "ESCALATED_TO_MANAGER"
     assert res.escalation_reason is not None
-    assert "社内交際費規定上限" in res.escalation_reason
-    assert "経理保留・要承認" in res.generated_comment_ja
+    assert "exceeds corporate policy limit" in res.escalation_reason
+    assert "FINANCIAL HOLD / APPROVAL REQUIRED" in res.generated_comment_ja
 
 
 def test_expense_workflow_missing_receipt_escalation():
@@ -58,7 +58,7 @@ def test_expense_workflow_missing_receipt_escalation():
     )
     res = engine.process_claim(req)
     assert res.status == "ESCALATED_TO_MANAGER"
-    assert "領収書" in res.escalation_reason
+    assert "Official receipt is missing" in res.escalation_reason
 
 
 def test_expense_workflow_travel_limit_escalation():
@@ -75,7 +75,7 @@ def test_expense_workflow_travel_limit_escalation():
     )
     res = engine.process_claim(req)
     assert res.status == "ESCALATED_TO_MANAGER"
-    assert "自動精算上限" in res.escalation_reason
+    assert "exceeds auto-approval threshold" in res.escalation_reason
 
 
 def test_run_sample_expense_batch():

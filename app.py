@@ -85,6 +85,17 @@ st.markdown(
         border-radius: 4px;
         font-family: monospace;
     }
+    /* Clean Sidebar Radio Left Alignment */
+    div[data-testid="stRadio"] label {
+        display: flex !important;
+        align-items: center !important;
+        text-align: left !important;
+    }
+    div[data-testid="stRadio"] label p {
+        text-align: left !important;
+        margin: 0 !important;
+        padding-left: 6px !important;
+    }
     </style>
     """,
     unsafe_allow_html=True,
@@ -142,11 +153,11 @@ with st.sidebar:
     menu = st.radio(
         "Navigation",
         [
-            "📊 Executive ROI Dashboard (Step 2)",
-            "🤖 Live Automation Prototype (Step 3)",
-            "🔍 Telemetry & Process Explorer (Step 1)",
-            "🛡️ Implementation Risk Matrix",
-            "📖 7-Day Sprint Work Log & Audit",
+            "Executive ROI Dashboard (Step 2)",
+            "Live Automation Prototype (Step 3)",
+            "Telemetry & Process Explorer (Step 1)",
+            "Implementation Risk Matrix",
+            "7-Day Sprint Work Log & Audit",
         ],
         index=0,
     )
@@ -161,7 +172,7 @@ with st.sidebar:
 # -----------------------------------------------------------------------------
 # VIEW 1: EXECUTIVE ROI DASHBOARD
 # -----------------------------------------------------------------------------
-if menu == "📊 Executive ROI Dashboard (Step 2)":
+if menu == "Executive ROI Dashboard (Step 2)":
     st.title("📊 Executive ROI Prioritization Dashboard")
     st.markdown(
         """
@@ -270,7 +281,7 @@ if menu == "📊 Executive ROI Dashboard (Step 2)":
 # -----------------------------------------------------------------------------
 # VIEW 2: LIVE STEP 3 PROTOTYPE DEMO
 # -----------------------------------------------------------------------------
-elif menu == "🤖 Live Automation Prototype (Step 3)":
+elif menu == "Live Automation Prototype (Step 3)":
     st.title("🤖 Step 3 Prototype: Multi-Process Enterprise Automation")
     st.markdown(
         """
@@ -303,62 +314,62 @@ elif menu == "🤖 Live Automation Prototype (Step 3)":
             "Preset 1: Standard Quantity Adjustment (+10% -> Auto-Approved)": {
                 "po": "PO-2026-469",
                 "vendor": "SUP-1750",
-                "name": "千葉金属工業",
+                "name": "Chiba Metal Industries",
                 "type": "quantity_change",
                 "orig_qty": 100,
                 "req_qty": 110,
                 "price": 520.0,
                 "price_pct": 0.0,
                 "shift": 1,
-                "memo": "納期の微調整",
+                "memo": "Minor delivery date adjustment",
             },
             "Preset 2: Quality Certificate Request (Standard -> Auto-Approved)": {
                 "po": "PO-2026-681",
                 "vendor": "SUP-3310",
-                "name": "シャープ株式会社",
+                "name": "Sharp Corporation",
                 "type": "quality_certificate_request",
                 "orig_qty": 50,
                 "req_qty": 50,
                 "price": 1450.0,
                 "price_pct": 0.0,
                 "shift": 0,
-                "memo": "品質証明書送付依頼",
+                "memo": "Quality inspection certificate request",
             },
             "Preset 3: Contract Price Revision (+15% > 5% limit -> Escalated)": {
                 "po": "PO-2026-512",
                 "vendor": "SUP-2890",
-                "name": "三菱電機株式会社",
+                "name": "Mitsubishi Electric Corporation",
                 "type": "price_revision",
                 "orig_qty": 200,
                 "req_qty": 200,
                 "price": 1200.0,
                 "price_pct": 15.0,
                 "shift": 0,
-                "memo": "原材料高騰に伴う単価改定要請",
+                "memo": "Price revision request due to raw material costs",
             },
             "Preset 4: Supply Chain Delivery Delay (+10 days > 5 limit -> Escalated)": {
                 "po": "PO-2026-904",
                 "vendor": "SUP-4011",
-                "name": "日立金属物流部",
+                "name": "Hitachi Metals Logistics",
                 "type": "quantity_change",
                 "orig_qty": 150,
                 "req_qty": 150,
                 "price": 800.0,
                 "price_pct": 0.0,
                 "shift": 10,
-                "memo": "船便遅延による納期変更申入",
+                "memo": "Delivery reschedule due to shipping delay",
             },
             "Custom Configuration": {
                 "po": "PO-2026-CUSTOM",
                 "vendor": "SUP-9999",
-                "name": "取引先企業",
+                "name": "Partner Enterprise",
                 "type": "quantity_change",
                 "orig_qty": 100,
                 "req_qty": 100,
                 "price": 1000.0,
                 "price_pct": 0.0,
                 "shift": 0,
-                "memo": "個別調整",
+                "memo": "Standard operational adjustment",
             },
         }
 
@@ -388,7 +399,7 @@ elif menu == "🤖 Live Automation Prototype (Step 3)":
             )
 
             in_po = st.text_input("Purchase Order ID (PO):", key="input_po")
-            in_vendor_name = st.text_input("Supplier Name (日本語):", key="input_name")
+            in_vendor_name = st.text_input("Supplier Name:", key="input_name")
             
             type_options = [
                 "quantity_change",
@@ -399,11 +410,11 @@ elif menu == "🤖 Live Automation Prototype (Step 3)":
             ]
             
             type_labels = {
-                "quantity_change": "📦 Quantity Change (数量変更)",
-                "price_revision": "💰 Price Revision (単価改定)",
-                "item_specification_change": "🔧 Item Specification Change (製品仕様変更)",
-                "quality_certificate_request": "📜 Quality Certificate Request (品質証明書依頼)",
-                "none": "✅ None (No Change / 変更なし)",
+                "quantity_change": "📦 Quantity Change",
+                "price_revision": "💰 Price Revision",
+                "item_specification_change": "🔧 Item Specification Change",
+                "quality_certificate_request": "📜 Quality Certificate Request",
+                "none": "✅ None (No Change)",
             }
 
             in_req_type = st.selectbox(
@@ -442,7 +453,7 @@ elif menu == "🤖 Live Automation Prototype (Step 3)":
                 unit_price=1000.0,
                 price_change_pct=in_price_pct,
                 delivery_date_shift_days=in_shift,
-                memo="リアルタイム自動判定",
+                memo="Real-time automated policy evaluation",
             )
 
             engine = SupplierWorkflowEngine()
@@ -457,7 +468,7 @@ elif menu == "🤖 Live Automation Prototype (Step 3)":
                     f'<code>Latency: {latency_ms:.2f} ms</code>',
                     unsafe_allow_html=True,
                 )
-                st.markdown("#### Generated Japanese Communication Payload:")
+                st.markdown("#### Generated Vendor Communication Payload:")
                 st.info(result.generated_comment_ja)
                 st.caption(f"Action Taken: {result.action_taken}")
             else:
@@ -483,7 +494,7 @@ elif menu == "🤖 Live Automation Prototype (Step 3)":
         st.markdown(
             """
             **Target Bottleneck:** Rank #2 — `expense_processing` (61 executions, 35.0 active minutes, 9.44 friction score).  
-            **Compliance Basis:** Corporate Accounting Standards (*settai_keihi_kitei*, *ryohi_kotsu_kitei*).  
+            **Compliance Basis:** Corporate Accounting Standards (Entertainment & Travel Regulations).  
             **Automation Goal:** Instant straight-through journal posting with automatic exception routing to department directors.
             """
         )
@@ -494,68 +505,68 @@ elif menu == "🤖 Live Automation Prototype (Step 3)":
             "Preset 1: Client Dinner within Limit (¥8,000/head <= ¥10,000 -> Auto-Approved)": {
                 "claim_id": "EXP-2026-101",
                 "emp_id": "EMP-2041",
-                "emp_name": "山田 太郎",
-                "dept": "法人営業部",
+                "emp_name": "Taro Yamada",
+                "dept": "Corporate Sales",
                 "cat": "entertainment",
                 "amount": 16000.0,
                 "attendees": 2,
                 "has_receipt": True,
-                "memo": "新規取引先との契約締結に伴う会食",
+                "memo": "Client dinner following contract agreement",
             },
             "Preset 2: Shinkansen Business Travel (¥28,500 <= ¥30,000 -> Auto-Approved)": {
                 "claim_id": "EXP-2026-103",
                 "emp_id": "EMP-3055",
-                "emp_name": "鈴木 花子",
-                "dept": "物流管理部",
+                "emp_name": "Hanako Suzuki",
+                "dept": "Logistics Operations",
                 "cat": "travel_transit",
                 "amount": 28500.0,
                 "attendees": 1,
                 "has_receipt": True,
-                "memo": "大阪物流センター出張新幹線代（往復）",
+                "memo": "Roundtrip bullet train transit to Osaka logistics center",
             },
             "Preset 3: Executive VIP Dinner Over Cap (¥18,000/head > ¥10,000 limit -> Escalated)": {
                 "claim_id": "EXP-2026-102",
                 "emp_id": "EMP-1192",
-                "emp_name": "佐藤 一郎",
-                "dept": "経営企画部",
+                "emp_name": "Ichiro Sato",
+                "dept": "Corporate Strategy",
                 "cat": "entertainment",
                 "amount": 36000.0,
                 "attendees": 2,
                 "has_receipt": True,
-                "memo": "提携先役員との事業戦略協議会食",
+                "memo": "Strategic business conference dinner with partner executives",
             },
             "Preset 4: Taxi Fare Missing Receipt (No Receipt -> Escalated)": {
                 "claim_id": "EXP-2026-104",
                 "emp_id": "EMP-4420",
-                "emp_name": "田中 健二",
-                "dept": "調達購買部",
+                "emp_name": "Kenji Tanaka",
+                "dept": "Procurement",
                 "cat": "travel_transit",
                 "amount": 4200.0,
                 "attendees": 1,
                 "has_receipt": False,
-                "memo": "深夜納品対応後の緊急タクシー利用（レシート紛失）",
+                "memo": "Late-night emergency taxi fare after urgent delivery (receipt misplaced)",
             },
             "Preset 5: Bulk Office Equipment Over Limit (¥68,000 > ¥50,000 limit -> Escalated)": {
                 "claim_id": "EXP-2026-105",
                 "emp_id": "EMP-5100",
-                "emp_name": "渡辺 誠",
-                "dept": "総務部",
+                "emp_name": "Makoto Watanabe",
+                "dept": "General Affairs",
                 "cat": "supplies",
                 "amount": 68000.0,
                 "attendees": 1,
                 "has_receipt": True,
-                "memo": "オフィスエルゴノミクス備品一式（特注モニターアーム他）",
+                "memo": "Bulk ergonomic office equipment purchase (custom monitor arms)",
             },
             "Custom Configuration": {
                 "claim_id": "EXP-2026-CUSTOM",
                 "emp_id": "EMP-9999",
-                "emp_name": "申請者氏名",
-                "dept": "管理部",
+                "emp_name": "Claimant Name",
+                "dept": "Administration",
                 "cat": "entertainment",
                 "amount": 10000.0,
                 "attendees": 1,
                 "has_receipt": True,
-                "memo": "個別経費精算申請",
+                "memo": "Individual expense reimbursement claim",
             },
         }
 
@@ -587,25 +598,25 @@ elif menu == "🤖 Live Automation Prototype (Step 3)":
 
             c_e1, c_e2 = st.columns(2)
             with c_e1:
-                exp_claim_id = st.text_input("Claim ID (精算伝票番号):", key="exp_in_claim_id")
+                exp_claim_id = st.text_input("Claim ID:", key="exp_in_claim_id")
             with c_e2:
-                exp_dept = st.text_input("Department (所属部署):", key="exp_in_dept")
+                exp_dept = st.text_input("Department:", key="exp_in_dept")
 
             c_e3, c_e4 = st.columns(2)
             with c_e3:
-                exp_emp_id = st.text_input("Employee ID (社員番号):", key="exp_in_emp_id")
+                exp_emp_id = st.text_input("Employee ID:", key="exp_in_emp_id")
             with c_e4:
-                exp_emp_name = st.text_input("Employee Name (申請者氏名):", key="exp_in_emp_name")
+                exp_emp_name = st.text_input("Employee Name:", key="exp_in_emp_name")
 
             exp_cat_options = ["entertainment", "travel_transit", "supplies", "general"]
             exp_cat_labels = {
-                "entertainment": "🍽️ Entertainment & Dining (接待交際費 - 上限: ¥10,000/名)",
-                "travel_transit": "🚅 Domestic Travel & Transit (旅費交通費 - 上限: ¥30,000)",
-                "supplies": "📦 Office Supplies (消耗品費 - 上限: ¥50,000)",
-                "general": "📄 General Corporate Expense (一般経費)",
+                "entertainment": "🍽️ Entertainment & Dining (Limit: ¥10,000 / person)",
+                "travel_transit": "🚅 Domestic Travel & Transit (Limit: ¥30,000)",
+                "supplies": "📦 Office Supplies (Limit: ¥50,000)",
+                "general": "📄 General Corporate Expense",
             }
             exp_cat = st.selectbox(
-                "Expense Category (経費勘定科目):",
+                "Expense Category:",
                 options=exp_cat_options,
                 format_func=lambda x: exp_cat_labels.get(x, x),
                 key="exp_in_cat",
@@ -614,7 +625,7 @@ elif menu == "🤖 Live Automation Prototype (Step 3)":
             c_e5, c_e6 = st.columns(2)
             with c_e5:
                 exp_amount = st.number_input(
-                    "Total Amount (¥ / 申請金額):",
+                    "Total Amount (JPY ¥):",
                     min_value=100.0,
                     max_value=1000000.0,
                     step=500.0,
@@ -622,7 +633,7 @@ elif menu == "🤖 Live Automation Prototype (Step 3)":
                 )
             with c_e6:
                 exp_attendees = st.number_input(
-                    "Attendees Count (参加人数):",
+                    "Attendees Count:",
                     min_value=1,
                     max_value=50,
                     step=1,
@@ -630,16 +641,16 @@ elif menu == "🤖 Live Automation Prototype (Step 3)":
                 )
 
             exp_has_receipt = st.checkbox(
-                "🧾 Official Receipt Attached & Verified (領収書添付済み)",
+                "🧾 Official Receipt Attached & Verified",
                 key="exp_in_has_receipt",
             )
             exp_memo = st.text_input(
-                "Business Purpose / Memo (利用目的・用途):",
+                "Business Purpose / Memo:",
                 key="exp_in_memo",
             )
 
             st.button("🚀 Evaluate Financial Policy Engine", type="primary", use_container_width=True, key="btn_run_exp")
-            st.caption("💡 Real-time policy engine checks compliance against Japanese accounting standards.")
+            st.caption("💡 Real-time policy engine checks compliance against corporate accounting guidelines.")
 
         with col_exp_live:
             st.subheader("2. Real-Time Policy Decision & General Ledger Log")
@@ -668,7 +679,7 @@ elif menu == "🤖 Live Automation Prototype (Step 3)":
                     f'<code>Latency: {latency_ms:.2f} ms</code>',
                     unsafe_allow_html=True,
                 )
-                st.markdown("#### Generated Japanese Accounting Record (仕訳・精算記録):")
+                st.markdown("#### Generated Accounting Record & ERP Ledger Entry:")
                 st.info(exp_result.generated_comment_ja)
                 st.caption(f"Action Taken: {exp_result.action_taken}")
             else:
@@ -680,7 +691,7 @@ elif menu == "🤖 Live Automation Prototype (Step 3)":
                 )
                 st.markdown("#### Policy Breach / Escalation Reason:")
                 st.error(exp_result.escalation_reason)
-                st.markdown("#### Pending Internal Escalation Record (経理保留伝票):")
+                st.markdown("#### Pending Escalation Record (Held for Manager Review):")
                 st.warning(exp_result.generated_comment_ja)
 
             st.divider()
@@ -688,11 +699,11 @@ elif menu == "🤖 Live Automation Prototype (Step 3)":
             per_head = exp_amount / max(1, exp_attendees)
             st.write(f"- **Receipt Compliance:** {'✔ Valid Receipt Attached' if exp_has_receipt else '❌ Missing Receipt (Immediate Escalation)'}")
             if exp_cat == "entertainment":
-                st.write(f"- **Per-Head Entertainment Cost:** `¥{per_head:,.0f} / 名` (社内規定上限: $\\le ¥10,000$) -> {'✔ Within Cap' if per_head <= 10000.0 else '❌ Exceeds Cap'}")
+                st.write(f"- **Per-Head Entertainment Cost:** `¥{per_head:,.0f} / person` (Policy Limit: $\\le ¥10,000$) -> {'✔ Within Cap' if per_head <= 10000.0 else '❌ Exceeds Cap'}")
             elif exp_cat == "travel_transit":
-                st.write(f"- **Transit Claim Total:** `¥{exp_amount:,.0f}` (旅費規程上限: $\\le ¥30,000$) -> {'✔ Within Cap' if exp_amount <= 30000.0 else '❌ Exceeds Cap'}")
+                st.write(f"- **Transit Claim Total:** `¥{exp_amount:,.0f}` (Policy Limit: $\\le ¥30,000$) -> {'✔ Within Cap' if exp_amount <= 30000.0 else '❌ Exceeds Cap'}")
             elif exp_cat == "supplies":
-                st.write(f"- **Office Supplies Total:** `¥{exp_amount:,.0f}` (備品購入上限: $\\le ¥50,000$) -> {'✔ Within Cap' if exp_amount <= 50000.0 else '❌ Exceeds Cap'}")
+                st.write(f"- **Office Supplies Total:** `¥{exp_amount:,.0f}` (Policy Limit: $\\le ¥50,000$) -> {'✔ Within Cap' if exp_amount <= 50000.0 else '❌ Exceeds Cap'}")
             else:
                 st.write(f"- **General Expense Standard:** `¥{exp_amount:,.0f}` -> ✔ Standard Policy Compliant")
 
@@ -727,7 +738,7 @@ elif menu == "🤖 Live Automation Prototype (Step 3)":
 # -----------------------------------------------------------------------------
 # VIEW 3: TELEMETRY & PROCESS EXPLORER
 # -----------------------------------------------------------------------------
-elif menu == "🔍 Telemetry & Process Explorer (Step 1)":
+elif menu == "Telemetry & Process Explorer (Step 1)":
     st.title("🔍 Telemetry & Recovered Units of Work (Step 1)")
     st.markdown(
         """
@@ -783,7 +794,7 @@ elif menu == "🔍 Telemetry & Process Explorer (Step 1)":
 # -----------------------------------------------------------------------------
 # VIEW 4: IMPLEMENTATION RISK MATRIX
 # -----------------------------------------------------------------------------
-elif menu == "🛡️ Implementation Risk Matrix":
+elif menu == "Implementation Risk Matrix":
     st.title("🛡️ Implementation & Operational Risk Matrix")
     st.markdown(
         """
@@ -836,7 +847,7 @@ elif menu == "🛡️ Implementation Risk Matrix":
         {
             "Category": "Organizational",
             "Risk Description": "User Change-Management Resistance & Shadow Memos",
-            "Telemetry Evidence": "Operators habitually maintain personal scratchpads (*精算確認メモ).",
+            "Telemetry Evidence": "Operators habitually maintain personal scratchpad notes.",
             "Severity": "Medium",
             "Likelihood": "High",
             "Mitigation Strategy": "Deploy initially in 'Shadow Recommendation Mode' (1-click draft) for 2 weeks.",
@@ -862,7 +873,7 @@ elif menu == "🛡️ Implementation Risk Matrix":
 # -----------------------------------------------------------------------------
 # VIEW 5: 7-DAY SPRINT WORK LOG & AUDIT
 # -----------------------------------------------------------------------------
-elif menu == "📖 7-Day Sprint Work Log & Audit":
+elif menu == "7-Day Sprint Work Log & Audit":
     st.title("📖 7-Day Sprint Work Log & Verification")
     st.markdown(
         """

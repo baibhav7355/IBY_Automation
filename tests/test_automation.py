@@ -24,7 +24,7 @@ def test_supplier_workflow_engine_auto_approval():
     res = engine.process_request(req)
     assert res.status == "AUTO_APPROVED"
     assert res.escalation_reason is None
-    assert "自動処理完了" in res.generated_comment_ja
+    assert "AUTO-APPROVED" in res.generated_comment_ja
 
 
 def test_supplier_workflow_engine_escalation():
@@ -44,7 +44,7 @@ def test_supplier_workflow_engine_escalation():
     res = engine.process_request(req)
     assert res.status == "ESCALATED_TO_MANAGER"
     assert res.escalation_reason is not None
-    assert "自動保留・要承認" in res.generated_comment_ja
+    assert "APPROVAL REQUIRED" in res.generated_comment_ja
 
 
 def test_supplier_workflow_engine_escalations_all_rules():

@@ -6,11 +6,11 @@ accounts for 57.7% of all back-office operational volume.
 
 Architecture:
   - High-performance deterministic backend accounting policy engine.
-  - Enforces corporate expense limits based on Japanese compliance regulations:
-      * Entertainment Expenses (接待交際費 / settai_keihi_kitei): <= ¥10,000 per attendee.
-      * Domestic Travel & Transit (旅費交通費 / ryohi_kotsu_kitei): <= ¥30,000 per trip.
-      * Office Supplies (消耗品費): <= ¥50,000 per purchase.
-      * Strict Receipt Compliance (領収書照合): mandatory receipt attachment.
+  - Enforces corporate expense limits based on accounting regulations:
+      * Entertainment Expenses: <= ¥10,000 per attendee.
+      * Domestic Travel & Transit: <= ¥30,000 per trip.
+      * Office Supplies: <= ¥50,000 per purchase.
+      * Strict Receipt Compliance: mandatory receipt attachment.
   - Automatically executes straight-through accounting reimbursement (80% volume) and
     escalates policy breaches directly to department directors.
 """
@@ -68,10 +68,10 @@ class ExpenseResult:
 class ExpenseWorkflowEngine:
     """Deterministic policy validation engine for back-office expense claims."""
 
-    # Corporate expense policy thresholds (derived from Japanese financial accounting guidelines)
-    MAX_ENTERTAINMENT_PER_HEAD = 10000.0  # ¥10,000 / head (接待交際費基準)
-    MAX_AUTO_TRAVEL_AMOUNT = 30000.0      # ¥30,000 / claim (国内出張・新幹線基準)
-    MAX_AUTO_SUPPLIES_AMOUNT = 50000.0    # ¥50,000 / purchase (備品消耗品基準)
+    # Corporate expense policy thresholds (derived from corporate financial accounting guidelines)
+    MAX_ENTERTAINMENT_PER_HEAD = 10000.0  # ¥10,000 / head (Entertainment cap)
+    MAX_AUTO_TRAVEL_AMOUNT = 30000.0      # ¥30,000 / claim (Domestic travel / transit cap)
+    MAX_AUTO_SUPPLIES_AMOUNT = 50000.0    # ¥50,000 / purchase (Office supplies cap)
 
     def __init__(self, dry_run: bool = False) -> None:
         self.dry_run = dry_run
@@ -85,46 +85,46 @@ class ExpenseWorkflowEngine:
 
         # 1. Mandatory Receipt Validation Gate
         if not req.has_receipt:
-            escalations.append("領収書（レシート）が添付されていません (Missing official receipt)")
+            escalations.append("Official receipt is missing (receipt verification required)")
 
         # 2. Category-Specific Policy Checks
         if req.expense_category == "entertainment":
             if per_head > self.MAX_ENTERTAINMENT_PER_HEAD:
                 escalations.append(
-                    f"1名あたりの交際費（¥{per_head:,.0f}）が社内交際費規定上限（¥{self.MAX_ENTERTAINMENT_PER_HEAD:,.0f}）を超過しています"
+                    f"Per-head entertainment expense (¥{per_head:,.0f}) exceeds corporate policy limit (¥{self.MAX_ENTERTAINMENT_PER_HEAD:,.0f}/head)"
                 )
             if req.attendee_count <= 0:
-                escalations.append("会食参加人数が未入力です (Attendee count required)")
+                escalations.append("Attendee count must be at least 1")
 
         elif req.expense_category == "travel_transit":
             if req.amount > self.MAX_AUTO_TRAVEL_AMOUNT:
                 escalations.append(
-                    f"出張旅費（¥{req.amount:,.0f}）が自動精算上限（¥{self.MAX_AUTO_TRAVEL_AMOUNT:,.0f}）を超過しています"
+                    f"Domestic travel expense (¥{req.amount:,.0f}) exceeds auto-approval threshold (¥{self.MAX_AUTO_TRAVEL_AMOUNT:,.0f})"
                 )
 
         elif req.expense_category == "supplies":
             if req.amount > self.MAX_AUTO_SUPPLIES_AMOUNT:
                 escalations.append(
-                    f"消耗品購入額（¥{req.amount:,.0f}）が自動精算上限（¥{self.MAX_AUTO_SUPPLIES_AMOUNT:,.0f}）を超過しています"
+                    f"Office supplies purchase (¥{req.amount:,.0f}) exceeds auto-approval threshold (¥{self.MAX_AUTO_SUPPLIES_AMOUNT:,.0f})"
                 )
 
-        # 3. Decision Routing & Japanese Enterprise Accounting Log Generation
+        # 3. Decision Routing & Accounting Log Generation (English)
         clean_emp_name = req.employee_name.strip()
         category_label = {
-            "entertainment": "接待交際費",
-            "travel_transit": "旅費交通費",
-            "supplies": "消耗品費",
-            "general": "一般経費",
-        }.get(req.expense_category, "経費精算")
+            "entertainment": "Entertainment & Dining",
+            "travel_transit": "Travel & Transit",
+            "supplies": "Office Supplies",
+            "general": "General Corporate Expense",
+        }.get(req.expense_category, "Expense Claim")
 
         if escalations:
             status = "ESCALATED_TO_MANAGER"
             action = "Escalated for Department Manager Financial Sign-off"
             reason = "; ".join(escalations)
             comment = (
-                f"【経理保留・要承認】申請者:{clean_emp_name}殿 ({req.employee_id} / {req.department}) "
-                f"精算番号:{req.claim_id} 金額:¥{req.amount:,.0f}（種別:{category_label}）。 "
-                f"理由: {reason}。部門長決裁が必要です。"
+                f"[FINANCIAL HOLD / APPROVAL REQUIRED] Claimant: {clean_emp_name} ({req.employee_id} / {req.department}) | "
+                f"Claim ID: {req.claim_id} | Amount: ¥{req.amount:,.0f} ({category_label}). "
+                f"Reason: {reason}. Department Director approval required."
             )
         else:
             status = "AUTO_APPROVED"
@@ -132,19 +132,22 @@ class ExpenseWorkflowEngine:
             reason = None
             if req.expense_category == "entertainment":
                 comment = (
-                    f"【経理承認】申請者:{clean_emp_name}殿 ({req.employee_id}) 精算番号:{req.claim_id} "
-                    f"種別:{category_label} 金額:¥{req.amount:,.0f}（参加{attendees}名・1名あたり¥{per_head:,.0f}）。"
-                    f"社内交際費規定上限内につき自動精算・計上を完了しました。"
+                    f"[ACCOUNTING APPROVED] Claimant: {clean_emp_name} ({req.employee_id}) | "
+                    f"Claim ID: {req.claim_id} | Category: {category_label} | "
+                    f"Amount: ¥{req.amount:,.0f} ({attendees} attendees, ¥{per_head:,.0f}/person). "
+                    f"Within corporate entertainment policy limit. Auto-reimbursement and ledger journal entry completed."
                 )
             elif req.expense_category == "travel_transit":
                 comment = (
-                    f"【経理承認】申請者:{clean_emp_name}殿 ({req.employee_id}) 精算番号:{req.claim_id} "
-                    f"種別:{category_label} 金額:¥{req.amount:,.0f}。交通費規定内につき自動精算を完了しました。"
+                    f"[ACCOUNTING APPROVED] Claimant: {clean_emp_name} ({req.employee_id}) | "
+                    f"Claim ID: {req.claim_id} | Category: {category_label} | "
+                    f"Amount: ¥{req.amount:,.0f}. Within travel policy limit. Auto-reimbursement completed."
                 )
             else:
                 comment = (
-                    f"【経理承認】申請者:{clean_emp_name}殿 ({req.employee_id}) 精算番号:{req.claim_id} "
-                    f"種別:{category_label} 金額:¥{req.amount:,.0f}。社内規程に合致し正常に計上処理しました。"
+                    f"[ACCOUNTING APPROVED] Claimant: {clean_emp_name} ({req.employee_id}) | "
+                    f"Claim ID: {req.claim_id} | Category: {category_label} | "
+                    f"Amount: ¥{req.amount:,.0f}. Fully compliant with corporate expense regulations. Journal posting completed."
                 )
 
         result = ExpenseResult(
@@ -169,46 +172,46 @@ def run_sample_expense_batch() -> List[ExpenseResult]:
         ExpenseClaimRequest(
             claim_id="EXP-2026-101",
             employee_id="EMP-2041",
-            employee_name="山田 太郎",
-            department="法人営業部",
+            employee_name="Taro Yamada",
+            department="Corporate Sales",
             expense_category="entertainment",
             amount=16000.0,
             attendee_count=2,  # ¥8,000/head <= ¥10,000
             has_receipt=True,
-            memo="クライアント会食",
+            memo="Client business dinner following contract signing",
         ),
         ExpenseClaimRequest(
             claim_id="EXP-2026-102",
             employee_id="EMP-1192",
-            employee_name="佐藤 一郎",
-            department="経営企画部",
+            employee_name="Ichiro Sato",
+            department="Corporate Strategy",
             expense_category="entertainment",
             amount=36000.0,
             attendee_count=2,  # ¥18,000/head > ¥10,000 limit -> Escalated!
             has_receipt=True,
-            memo="役員会食",
+            memo="Executive business dinner",
         ),
         ExpenseClaimRequest(
             claim_id="EXP-2026-103",
             employee_id="EMP-3055",
-            employee_name="鈴木 花子",
-            department="物流管理部",
+            employee_name="Hanako Suzuki",
+            department="Logistics Operations",
             expense_category="travel_transit",
             amount=28500.0,  # Shinkansen Tokyo-Osaka <= ¥30,000
             attendee_count=1,
             has_receipt=True,
-            memo="大阪物流センター出張新幹線代",
+            memo="Osaka logistics center roundtrip bullet train transit",
         ),
         ExpenseClaimRequest(
             claim_id="EXP-2026-104",
             employee_id="EMP-4420",
-            employee_name="田中 健二",
-            department="調達購買部",
+            employee_name="Kenji Tanaka",
+            department="Procurement",
             expense_category="travel_transit",
             amount=4200.0,
             attendee_count=1,
             has_receipt=False,  # Missing receipt -> Escalated!
-            memo="深夜タクシー代（領収書紛失）",
+            memo="Late-night emergency taxi fare (receipt misplaced)",
         ),
     ]
 
@@ -234,7 +237,7 @@ def main() -> None:
         status_tag = f"[{'APPROVED' if r.status == 'AUTO_APPROVED' else 'ESCALATE'}]  {r.status}"
         reason_txt = r.escalation_reason if r.escalation_reason else "None (Straight-Through Processing)"
         print(f"{r.claim_id:<14} | {status_tag:<22} | ¥{r.per_head_amount:>8,.0f} | {reason_txt}")
-        print(f"   ↳ 日本語記録: {r.generated_comment_ja}")
+        print(f"   ↳ Accounting Record: {r.generated_comment_ja}")
         print("-" * 98)
 
     approved = sum(1 for r in results if r.status == "AUTO_APPROVED")

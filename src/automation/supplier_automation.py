@@ -105,57 +105,54 @@ class SupplierWorkflowEngine:
             status = "ESCALATED_TO_MANAGER"
             action = "Escalated for human procurement review"
             comment = (
-                f"【自動保留・要承認】{req.vendor_name}宛 発注番号:{req.po_id}。 "
-                f"理由: {'; '.join(escalations)}。担当マネージャーの確認が必要です。"
+                f"[HOLD / APPROVAL REQUIRED] Attention Manager | Vendor: {req.vendor_name} | PO: {req.po_id}. "
+                f"Reason: {'; '.join(escalations)}. Department Manager review required."
             )
             reason = "; ".join(escalations)
         else:
             status = "AUTO_APPROVED"
             action = "Auto-dispatched vendor confirmation"
-            # Format clean vendor display name (avoid duplicate 御中 / 宛)
-            clean_name = req.vendor_name.rstrip("御中宛")
-            vendor_display = f"{clean_name}御中"
+            clean_name = req.vendor_name.strip()
 
             if req.request_type == "quantity_change":
                 if req.requested_qty == req.original_qty:
                     comment = (
-                        f"【自動処理完了】{vendor_display} 発注番号:{req.po_id}の数量を確認しました。（No Change in Quantity）"
+                        f"[AUTO-APPROVED] Vendor: {clean_name} | PO: {req.po_id} - Quantity confirmed (No Change in Quantity)."
                     )
                 else:
                     comment = (
-                        f"【自動処理完了】{vendor_display} 発注番号:{req.po_id}の数量変更依頼を承認しました。"
-                        f"（変更前:{req.original_qty} → 変更後:{req.requested_qty}）"
+                        f"[AUTO-APPROVED] Vendor: {clean_name} | PO: {req.po_id} - Quantity change request approved. "
+                        f"(Original: {req.original_qty} -> Requested: {req.requested_qty})"
                     )
             elif req.request_type == "price_revision":
                 if req.price_change_pct == 0.0:
                     comment = (
-                        f"【自動処理完了】{vendor_display} 発注番号:{req.po_id}の価格を確認しました。（No Change in Price）"
+                        f"[AUTO-APPROVED] Vendor: {clean_name} | PO: {req.po_id} - Unit price confirmed (No Change in Price)."
                     )
-
-
                 else:
                     sign = "+" if req.price_change_pct > 0 else ""
                     revised_price = req.unit_price * (1.0 + req.price_change_pct / 100.0)
                     comment = (
-                        f"【自動処理完了】{vendor_display} 発注番号:{req.po_id}の単価改定依頼（{sign}{req.price_change_pct:.1f}%、改定単価:約¥{revised_price:,.0f}）を承認しました。"
+                        f"[AUTO-APPROVED] Vendor: {clean_name} | PO: {req.po_id} - Price revision approved "
+                        f"({sign}{req.price_change_pct:.1f}%, revised unit price: ~¥{revised_price:,.0f})."
                     )
 
             elif req.request_type in ("item_specification_change", "spec_change", "product_spec_change"):
                 comment = (
-                    f"【自動処理完了】{vendor_display} 発注番号:{req.po_id}の製品仕様変更確認を登録しました。"
+                    f"[AUTO-APPROVED] Vendor: {clean_name} | PO: {req.po_id} - Item specification change registered successfully."
                 )
             elif req.request_type in ("quality_certificate_request", "cert_request", "certificate_request"):
                 comment = (
-                    f"【自動処理完了】{vendor_display} 発注番号:{req.po_id}に関する品質証明書の送付依頼を発行しました。"
+                    f"[AUTO-APPROVED] Vendor: {clean_name} | PO: {req.po_id} - Quality certificate request issued successfully."
                 )
 
             elif req.request_type in ("none", "no_request", "nothing"):
                 comment = (
-                    f"【変更なし・確認完了】{vendor_display} 発注番号:{req.po_id}に変更依頼はありません。既存契約条件のまま継続処理します。"
+                    f"[CONFIRMED - NO CHANGE] Vendor: {clean_name} | PO: {req.po_id} - No change requested. Standard contract terms active."
                 )
             else:
                 comment = (
-                    f"【自動処理完了】{vendor_display} 発注番号:{req.po_id}の取引先連絡を正常に処理しました。"
+                    f"[AUTO-APPROVED] Vendor: {clean_name} | PO: {req.po_id} - Supplier communication processed successfully."
                 )
             reason = None
 
@@ -185,7 +182,7 @@ def run_sample_automation() -> Dict[str, Any]:
         SupplierRequest(
             po_id="PO-2026-469",
             vendor_id="SUP-175001",
-            vendor_name="千葉金属工業",
+            vendor_name="Chiba Metal Industries",
             request_type="quantity_change",
             item_code="PN-8201",
             original_qty=100,
@@ -197,7 +194,7 @@ def run_sample_automation() -> Dict[str, Any]:
         SupplierRequest(
             po_id="PO-2026-512",
             vendor_id="SUP-175002",
-            vendor_name="三菱電機株式会社",
+            vendor_name="Mitsubishi Electric Corporation",
             request_type="price_revision",
             item_code="INV-401",
             original_qty=50,
@@ -209,7 +206,7 @@ def run_sample_automation() -> Dict[str, Any]:
         SupplierRequest(
             po_id="PO-2026-681",
             vendor_id="SUP-175003",
-            vendor_name="シャープ株式会社",
+            vendor_name="Sharp Corporation",
             request_type="cert_request",
             item_code="DSP-109",
             original_qty=200,
@@ -240,7 +237,7 @@ def print_demo_report(results: List[AutomationResult]) -> None:
         status_display = f"[APPROVED]  {r.status}" if r.status == "AUTO_APPROVED" else f"[ESCALATE]  {r.status}"
         reason_display = r.escalation_reason if r.escalation_reason else "None (Straight-Through Processing)"
         print(f"{r.po_id:<13} | {status_display:<22} | {r.action_taken:<34} | {reason_display}")
-        print(f"   ↳ 日本語記録: {r.generated_comment_ja}")
+        print(f"   ↳ Communication Record: {r.generated_comment_ja}")
         print("-" * 98)
 
     approved = sum(1 for r in results if r.status == "AUTO_APPROVED")
@@ -305,7 +302,7 @@ def main() -> None:
             SupplierRequest(
                 po_id="PO-2026-469",
                 vendor_id="SUP-175001",
-                vendor_name="千葉金属工業",
+                vendor_name="Chiba Metal Industries",
                 request_type="quantity_change",
                 item_code="PN-8201",
                 original_qty=100,
@@ -317,7 +314,7 @@ def main() -> None:
             SupplierRequest(
                 po_id="PO-2026-512",
                 vendor_id="SUP-175002",
-                vendor_name="三菱電機株式会社",
+                vendor_name="Mitsubishi Electric Corporation",
                 request_type="price_revision",
                 item_code="INV-401",
                 original_qty=50,
@@ -329,7 +326,7 @@ def main() -> None:
             SupplierRequest(
                 po_id="PO-2026-681",
                 vendor_id="SUP-175003",
-                vendor_name="シャープ株式会社",
+                vendor_name="Sharp Corporation",
                 request_type="cert_request",
                 item_code="DSP-109",
                 original_qty=200,
