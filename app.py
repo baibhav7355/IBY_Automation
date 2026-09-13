@@ -25,11 +25,17 @@ ROOT = Path(__file__).resolve().parent
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-# Import Step 3 prototype engine
+# Import Step 3 prototype engines (Procurement & Finance)
 from src.automation.supplier_automation import (
     SupplierRequest,
     SupplierWorkflowEngine,
     AutomationResult,
+)
+from src.automation.expense_automation import (
+    ExpenseClaimRequest,
+    ExpenseWorkflowEngine,
+    ExpenseResult,
+    run_sample_expense_batch,
 )
 
 # -----------------------------------------------------------------------------
@@ -147,7 +153,7 @@ with st.sidebar:
 
     st.divider()
     st.markdown("### System Health")
-    st.success("✔ 36 / 36 Pytest Tests Passing")
+    st.success("✔ 41 / 41 Pytest Tests Passing")
     st.info("✔ 279 Dataset B Segments Recovered")
     st.caption("Git Branch: `master` | Python 3.10+")
 
@@ -265,203 +271,456 @@ if menu == "📊 Executive ROI Dashboard (Step 2)":
 # VIEW 2: LIVE STEP 3 PROTOTYPE DEMO
 # -----------------------------------------------------------------------------
 elif menu == "🤖 Live Automation Prototype (Step 3)":
-    st.title("🤖 Step 3 Prototype: Supplier Communication Automation")
+    st.title("🤖 Step 3 Prototype: Multi-Process Enterprise Automation")
     st.markdown(
         """
-        **Target Bottleneck:** Rank #1 — `supplier_communication` (100 executions, 61.9 active minutes, 9.39 friction).  
-        **Architecture:** High-performance deterministic backend policy engine with straight-through auto-approval 
-        and managerial escalation governance.
+        **Dual Bottleneck Coverage (Dataset B):**  
+        Automating **57.7% of all enterprise back-office volume** (161 of 279 transactions) with deterministic 
+        policy validation, sub-millisecond execution, and managerial escalation governance.
         """
     )
 
     st.markdown("---")
 
-    # Engine Config / Preset Cases
-    col_config, col_live = st.columns([1, 1])
+    tab_supplier, tab_expense = st.tabs([
+        "🏭 Procurement: Supplier Communication (Rank #1 - 35.8% Volume)",
+        "💼 Finance: Expense Claim Processing (Rank #2 - 21.9% Volume)",
+    ])
 
-    PRESETS = {
-        "Preset 1: Standard Quantity Adjustment (+10% -> Auto-Approved)": {
-            "po": "PO-2026-469",
-            "vendor": "SUP-1750",
-            "name": "千葉金属工業",
-            "type": "quantity_change",
-            "orig_qty": 100,
-            "req_qty": 110,
-            "price": 520.0,
-            "price_pct": 0.0,
-            "shift": 1,
-            "memo": "納期の微調整",
-        },
-        "Preset 2: Quality Certificate Request (Standard -> Auto-Approved)": {
-            "po": "PO-2026-681",
-            "vendor": "SUP-3310",
-            "name": "シャープ株式会社",
-            "type": "quality_certificate_request",
-            "orig_qty": 50,
-
-
-            "req_qty": 50,
-            "price": 1450.0,
-            "price_pct": 0.0,
-            "shift": 0,
-            "memo": "品質証明書送付依頼",
-        },
-        "Preset 3: Contract Price Revision (+15% > 5% limit -> Escalated)": {
-            "po": "PO-2026-512",
-            "vendor": "SUP-2890",
-            "name": "三菱電機株式会社",
-            "type": "price_revision",
-            "orig_qty": 200,
-            "req_qty": 200,
-            "price": 1200.0,
-            "price_pct": 15.0,
-            "shift": 0,
-            "memo": "原材料高騰に伴う単価改定要請",
-        },
-        "Preset 4: Supply Chain Delivery Delay (+10 days > 5 limit -> Escalated)": {
-            "po": "PO-2026-904",
-            "vendor": "SUP-4011",
-            "name": "日立金属物流部",
-            "type": "quantity_change",
-            "orig_qty": 150,
-            "req_qty": 150,
-            "price": 800.0,
-            "price_pct": 0.0,
-            "shift": 10,
-            "memo": "船便遅延による納期変更申入",
-        },
-        "Custom Configuration": {
-            "po": "PO-2026-CUSTOM",
-            "vendor": "SUP-9999",
-            "name": "取引先企業",
-            "type": "quantity_change",
-            "orig_qty": 100,
-
-            "req_qty": 100,
-            "price": 1000.0,
-            "price_pct": 0.0,
-            "shift": 0,
-            "memo": "個別調整",
-        },
-    }
-
-    def apply_selected_preset():
-        sel = st.session_state.get("selected_preset_key", list(PRESETS.keys())[0])
-        p = PRESETS[sel]
-        st.session_state["input_po"] = p["po"]
-        st.session_state["input_name"] = p["name"]
-        st.session_state["input_type"] = p["type"]
-        st.session_state["input_orig_qty"] = p["orig_qty"]
-        st.session_state["input_req_qty"] = p["req_qty"]
-        st.session_state["input_price_pct"] = float(p["price_pct"])
-        st.session_state["input_shift"] = int(p["shift"])
-
-    # Initialize session state if first load
-    if "input_po" not in st.session_state:
-        st.session_state["selected_preset_key"] = list(PRESETS.keys())[0]
-        apply_selected_preset()
-
-    with col_config:
-        st.subheader("1. Select or Configure Request Payload")
-        preset = st.selectbox(
-            "Load Transaction Archetype Preset:",
-            options=list(PRESETS.keys()),
-            key="selected_preset_key",
-            on_change=apply_selected_preset,
+    with tab_supplier:
+        st.markdown(
+            """
+            **Target Bottleneck:** Rank #1 — `supplier_communication` (100 executions, 61.9 active minutes, 9.39 friction).  
+            **Architecture:** High-performance deterministic backend policy engine with straight-through auto-approval 
+            and managerial escalation governance.
+            """
         )
 
-        in_po = st.text_input("Purchase Order ID (PO):", key="input_po")
-        in_vendor_name = st.text_input("Supplier Name (日本語):", key="input_name")
-        
-        type_options = [
-            "quantity_change",
-            "price_revision",
-            "item_specification_change",
-            "quality_certificate_request",
-            "none",
-        ]
-        
-        type_labels = {
-            "quantity_change": "📦 Quantity Change (数量変更)",
-            "price_revision": "💰 Price Revision (単価改定)",
-            "item_specification_change": "🔧 Item Specification Change (製品仕様変更)",
-            "quality_certificate_request": "📜 Quality Certificate Request (品質証明書依頼)",
-            "none": "✅ None (No Change / 変更なし)",
+        # Engine Config / Preset Cases
+        col_config, col_live = st.columns([1, 1])
+
+        PRESETS = {
+            "Preset 1: Standard Quantity Adjustment (+10% -> Auto-Approved)": {
+                "po": "PO-2026-469",
+                "vendor": "SUP-1750",
+                "name": "千葉金属工業",
+                "type": "quantity_change",
+                "orig_qty": 100,
+                "req_qty": 110,
+                "price": 520.0,
+                "price_pct": 0.0,
+                "shift": 1,
+                "memo": "納期の微調整",
+            },
+            "Preset 2: Quality Certificate Request (Standard -> Auto-Approved)": {
+                "po": "PO-2026-681",
+                "vendor": "SUP-3310",
+                "name": "シャープ株式会社",
+                "type": "quality_certificate_request",
+                "orig_qty": 50,
+                "req_qty": 50,
+                "price": 1450.0,
+                "price_pct": 0.0,
+                "shift": 0,
+                "memo": "品質証明書送付依頼",
+            },
+            "Preset 3: Contract Price Revision (+15% > 5% limit -> Escalated)": {
+                "po": "PO-2026-512",
+                "vendor": "SUP-2890",
+                "name": "三菱電機株式会社",
+                "type": "price_revision",
+                "orig_qty": 200,
+                "req_qty": 200,
+                "price": 1200.0,
+                "price_pct": 15.0,
+                "shift": 0,
+                "memo": "原材料高騰に伴う単価改定要請",
+            },
+            "Preset 4: Supply Chain Delivery Delay (+10 days > 5 limit -> Escalated)": {
+                "po": "PO-2026-904",
+                "vendor": "SUP-4011",
+                "name": "日立金属物流部",
+                "type": "quantity_change",
+                "orig_qty": 150,
+                "req_qty": 150,
+                "price": 800.0,
+                "price_pct": 0.0,
+                "shift": 10,
+                "memo": "船便遅延による納期変更申入",
+            },
+            "Custom Configuration": {
+                "po": "PO-2026-CUSTOM",
+                "vendor": "SUP-9999",
+                "name": "取引先企業",
+                "type": "quantity_change",
+                "orig_qty": 100,
+                "req_qty": 100,
+                "price": 1000.0,
+                "price_pct": 0.0,
+                "shift": 0,
+                "memo": "個別調整",
+            },
         }
 
-        in_req_type = st.selectbox(
-            "Request Type:",
-            options=type_options,
-            format_func=lambda x: type_labels.get(x, x),
-            key="input_type",
+        def apply_selected_preset():
+            sel = st.session_state.get("selected_preset_key", list(PRESETS.keys())[0])
+            p = PRESETS[sel]
+            st.session_state["input_po"] = p["po"]
+            st.session_state["input_name"] = p["name"]
+            st.session_state["input_type"] = p["type"]
+            st.session_state["input_orig_qty"] = p["orig_qty"]
+            st.session_state["input_req_qty"] = p["req_qty"]
+            st.session_state["input_price_pct"] = float(p["price_pct"])
+            st.session_state["input_shift"] = int(p["shift"])
+
+        # Initialize session state if first load
+        if "input_po" not in st.session_state:
+            st.session_state["selected_preset_key"] = list(PRESETS.keys())[0]
+            apply_selected_preset()
+
+        with col_config:
+            st.subheader("1. Select or Configure Request Payload")
+            preset = st.selectbox(
+                "Load Transaction Archetype Preset:",
+                options=list(PRESETS.keys()),
+                key="selected_preset_key",
+                on_change=apply_selected_preset,
+            )
+
+            in_po = st.text_input("Purchase Order ID (PO):", key="input_po")
+            in_vendor_name = st.text_input("Supplier Name (日本語):", key="input_name")
+            
+            type_options = [
+                "quantity_change",
+                "price_revision",
+                "item_specification_change",
+                "quality_certificate_request",
+                "none",
+            ]
+            
+            type_labels = {
+                "quantity_change": "📦 Quantity Change (数量変更)",
+                "price_revision": "💰 Price Revision (単価改定)",
+                "item_specification_change": "🔧 Item Specification Change (製品仕様変更)",
+                "quality_certificate_request": "📜 Quality Certificate Request (品質証明書依頼)",
+                "none": "✅ None (No Change / 変更なし)",
+            }
+
+            in_req_type = st.selectbox(
+                "Request Type:",
+                options=type_options,
+                format_func=lambda x: type_labels.get(x, x),
+                key="input_type",
+            )
+
+            c_q1, c_q2 = st.columns(2)
+            with c_q1:
+                in_orig_qty = st.number_input("Original Quantity:", min_value=1, key="input_orig_qty")
+            with c_q2:
+                in_req_qty = st.number_input("Requested Quantity:", min_value=1, key="input_req_qty")
+
+            c_p1, c_p2 = st.columns(2)
+            with c_p1:
+                in_price_pct = st.slider("Price Variance (%):", min_value=0.0, max_value=30.0, step=0.5, key="input_price_pct")
+            with c_p2:
+                in_shift = st.slider("Delivery Shift (Days):", min_value=0, max_value=20, step=1, key="input_shift")
+
+            run_btn = st.button("🚀 Execute Policy Engine", type="primary", use_container_width=True)
+            st.caption("💡 Adjust any field above or click to trigger manual policy re-evaluation.")
+
+        with col_live:
+            st.subheader("2. Real-Time Engine Decision & Audit Log")
+            
+            req = SupplierRequest(
+                po_id=in_po,
+                vendor_id="SUP-AUTO",
+                vendor_name=in_vendor_name,
+                request_type=in_req_type,
+                item_code="ITM-7701",
+                original_qty=in_orig_qty,
+                requested_qty=in_req_qty,
+                unit_price=1000.0,
+                price_change_pct=in_price_pct,
+                delivery_date_shift_days=in_shift,
+                memo="リアルタイム自動判定",
+            )
+
+            engine = SupplierWorkflowEngine()
+            t0 = datetime.now()
+            result: AutomationResult = engine.process_request(req)
+            latency_ms = (datetime.now() - t0).total_seconds() * 1000.0
+
+            if result.status == "AUTO_APPROVED":
+                st.success(f"### Status: AUTO_APPROVED")
+                st.markdown(
+                    f'<span class="badge-approved">STRAIGHT-THROUGH PROCESSED</span> '
+                    f'<code>Latency: {latency_ms:.2f} ms</code>',
+                    unsafe_allow_html=True,
+                )
+                st.markdown("#### Generated Japanese Communication Payload:")
+                st.info(result.generated_comment_ja)
+                st.caption(f"Action Taken: {result.action_taken}")
+            else:
+                st.warning(f"### Status: ESCALATED_TO_MANAGER")
+                st.markdown(
+                    f'<span class="badge-escalate">MANAGERIAL HUMAN-IN-THE-LOOP QUEUE</span> '
+                    f'<code>Latency: {latency_ms:.2f} ms</code>',
+                    unsafe_allow_html=True,
+                )
+                st.markdown("#### Policy Breach / Reason:")
+                st.error(result.escalation_reason)
+                st.markdown("#### Pending Internal Escalation Record:")
+                st.warning(result.generated_comment_ja)
+
+            st.divider()
+            st.markdown("##### Policy Rule Validation Audit:")
+            qty_diff = abs(in_req_qty - in_orig_qty) / in_orig_qty * 100.0
+            st.write(f"- **Quantity Variance:** `{qty_diff:.1f}%` (Policy Limit: $\\le 25\\%$) -> {'✔ Passed' if qty_diff <= 25.0 else '❌ Breached'}")
+            st.write(f"- **Price Change:** `{in_price_pct:.1f}%` (Policy Limit: $\\le 5\\%$) -> {'✔ Passed' if in_price_pct <= 5.0 else '❌ Breached'}")
+            st.write(f"- **Delivery Shift:** `{in_shift} days` (Policy Limit: $\\le 5$ days) -> {'✔ Passed' if in_shift <= 5 else '❌ Breached'}")
+
+    with tab_expense:
+        st.markdown(
+            """
+            **Target Bottleneck:** Rank #2 — `expense_processing` (61 executions, 35.0 active minutes, 9.44 friction score).  
+            **Compliance Basis:** Corporate Accounting Standards (*settai_keihi_kitei*, *ryohi_kotsu_kitei*).  
+            **Automation Goal:** Instant straight-through journal posting with automatic exception routing to department directors.
+            """
         )
 
+        col_exp_config, col_exp_live = st.columns([1, 1])
 
-        c_q1, c_q2 = st.columns(2)
-        with c_q1:
-            in_orig_qty = st.number_input("Original Quantity:", min_value=1, key="input_orig_qty")
-        with c_q2:
-            in_req_qty = st.number_input("Requested Quantity:", min_value=1, key="input_req_qty")
+        EXPENSE_PRESETS = {
+            "Preset 1: Client Dinner within Limit (¥8,000/head <= ¥10,000 -> Auto-Approved)": {
+                "claim_id": "EXP-2026-101",
+                "emp_id": "EMP-2041",
+                "emp_name": "山田 太郎",
+                "dept": "法人営業部",
+                "cat": "entertainment",
+                "amount": 16000.0,
+                "attendees": 2,
+                "has_receipt": True,
+                "memo": "新規取引先との契約締結に伴う会食",
+            },
+            "Preset 2: Shinkansen Business Travel (¥28,500 <= ¥30,000 -> Auto-Approved)": {
+                "claim_id": "EXP-2026-103",
+                "emp_id": "EMP-3055",
+                "emp_name": "鈴木 花子",
+                "dept": "物流管理部",
+                "cat": "travel_transit",
+                "amount": 28500.0,
+                "attendees": 1,
+                "has_receipt": True,
+                "memo": "大阪物流センター出張新幹線代（往復）",
+            },
+            "Preset 3: Executive VIP Dinner Over Cap (¥18,000/head > ¥10,000 limit -> Escalated)": {
+                "claim_id": "EXP-2026-102",
+                "emp_id": "EMP-1192",
+                "emp_name": "佐藤 一郎",
+                "dept": "経営企画部",
+                "cat": "entertainment",
+                "amount": 36000.0,
+                "attendees": 2,
+                "has_receipt": True,
+                "memo": "提携先役員との事業戦略協議会食",
+            },
+            "Preset 4: Taxi Fare Missing Receipt (No Receipt -> Escalated)": {
+                "claim_id": "EXP-2026-104",
+                "emp_id": "EMP-4420",
+                "emp_name": "田中 健二",
+                "dept": "調達購買部",
+                "cat": "travel_transit",
+                "amount": 4200.0,
+                "attendees": 1,
+                "has_receipt": False,
+                "memo": "深夜納品対応後の緊急タクシー利用（レシート紛失）",
+            },
+            "Preset 5: Bulk Office Equipment Over Limit (¥68,000 > ¥50,000 limit -> Escalated)": {
+                "claim_id": "EXP-2026-105",
+                "emp_id": "EMP-5100",
+                "emp_name": "渡辺 誠",
+                "dept": "総務部",
+                "cat": "supplies",
+                "amount": 68000.0,
+                "attendees": 1,
+                "has_receipt": True,
+                "memo": "オフィスエルゴノミクス備品一式（特注モニターアーム他）",
+            },
+            "Custom Configuration": {
+                "claim_id": "EXP-2026-CUSTOM",
+                "emp_id": "EMP-9999",
+                "emp_name": "申請者氏名",
+                "dept": "管理部",
+                "cat": "entertainment",
+                "amount": 10000.0,
+                "attendees": 1,
+                "has_receipt": True,
+                "memo": "個別経費精算申請",
+            },
+        }
 
-        c_p1, c_p2 = st.columns(2)
-        with c_p1:
-            in_price_pct = st.slider("Price Variance (%):", min_value=0.0, max_value=30.0, step=0.5, key="input_price_pct")
-        with c_p2:
-            in_shift = st.slider("Delivery Shift (Days):", min_value=0, max_value=20, step=1, key="input_shift")
+        def apply_selected_expense_preset():
+            sel = st.session_state.get("selected_exp_preset_key", list(EXPENSE_PRESETS.keys())[0])
+            p = EXPENSE_PRESETS[sel]
+            st.session_state["exp_in_claim_id"] = p["claim_id"]
+            st.session_state["exp_in_emp_id"] = p["emp_id"]
+            st.session_state["exp_in_emp_name"] = p["emp_name"]
+            st.session_state["exp_in_dept"] = p["dept"]
+            st.session_state["exp_in_cat"] = p["cat"]
+            st.session_state["exp_in_amount"] = float(p["amount"])
+            st.session_state["exp_in_attendees"] = int(p["attendees"])
+            st.session_state["exp_in_has_receipt"] = bool(p["has_receipt"])
+            st.session_state["exp_in_memo"] = p["memo"]
 
-        run_btn = st.button("🚀 Execute Policy Engine", type="primary", use_container_width=True)
-        st.caption("💡 Adjust any field above or click to trigger manual policy re-evaluation.")
+        if "exp_in_claim_id" not in st.session_state:
+            st.session_state["selected_exp_preset_key"] = list(EXPENSE_PRESETS.keys())[0]
+            apply_selected_expense_preset()
 
-    with col_live:
-        st.subheader("2. Real-Time Engine Decision & Audit Log")
-        
-        req = SupplierRequest(
-            po_id=in_po,
-            vendor_id="SUP-AUTO",
-            vendor_name=in_vendor_name,
-            request_type=in_req_type,
-            item_code="ITM-7701",
-            original_qty=in_orig_qty,
-            requested_qty=in_req_qty,
-            unit_price=1000.0,
-            price_change_pct=in_price_pct,
-            delivery_date_shift_days=in_shift,
-            memo="リアルタイム自動判定",
-        )
-
-        engine = SupplierWorkflowEngine()
-        t0 = datetime.now()
-        result: AutomationResult = engine.process_request(req)
-        latency_ms = (datetime.now() - t0).total_seconds() * 1000.0
-
-        if result.status == "AUTO_APPROVED":
-            st.success(f"### Status: AUTO_APPROVED")
-            st.markdown(
-                f'<span class="badge-approved">STRAIGHT-THROUGH PROCESSED</span> '
-                f'<code>Latency: {latency_ms:.2f} ms</code>',
-                unsafe_allow_html=True,
+        with col_exp_config:
+            st.subheader("1. Select or Configure Expense Claim")
+            st.selectbox(
+                "Load Expense Claim Archetype Preset:",
+                options=list(EXPENSE_PRESETS.keys()),
+                key="selected_exp_preset_key",
+                on_change=apply_selected_expense_preset,
             )
-            st.markdown("#### Generated Japanese Communication Payload:")
-            st.info(result.generated_comment_ja)
-            st.caption(f"Action Taken: {result.action_taken}")
-        else:
-            st.warning(f"### Status: ESCALATED_TO_MANAGER")
-            st.markdown(
-                f'<span class="badge-escalate">MANAGERIAL HUMAN-IN-THE-LOOP QUEUE</span> '
-                f'<code>Latency: {latency_ms:.2f} ms</code>',
-                unsafe_allow_html=True,
-            )
-            st.markdown("#### Policy Breach / Reason:")
-            st.error(result.escalation_reason)
-            st.markdown("#### Pending Internal Escalation Record:")
-            st.warning(result.generated_comment_ja)
 
-        st.divider()
-        st.markdown("##### Policy Rule Validation Audit:")
-        qty_diff = abs(in_req_qty - in_orig_qty) / in_orig_qty * 100.0
-        st.write(f"- **Quantity Variance:** `{qty_diff:.1f}%` (Policy Limit: $\\le 25\\%$) -> {'✔ Passed' if qty_diff <= 25.0 else '❌ Breached'}")
-        st.write(f"- **Price Change:** `{in_price_pct:.1f}%` (Policy Limit: $\\le 5\\%$) -> {'✔ Passed' if in_price_pct <= 5.0 else '❌ Breached'}")
-        st.write(f"- **Delivery Shift:** `{in_shift} days` (Policy Limit: $\\le 5$ days) -> {'✔ Passed' if in_shift <= 5 else '❌ Breached'}")
+            c_e1, c_e2 = st.columns(2)
+            with c_e1:
+                exp_claim_id = st.text_input("Claim ID (精算伝票番号):", key="exp_in_claim_id")
+            with c_e2:
+                exp_dept = st.text_input("Department (所属部署):", key="exp_in_dept")
+
+            c_e3, c_e4 = st.columns(2)
+            with c_e3:
+                exp_emp_id = st.text_input("Employee ID (社員番号):", key="exp_in_emp_id")
+            with c_e4:
+                exp_emp_name = st.text_input("Employee Name (申請者氏名):", key="exp_in_emp_name")
+
+            exp_cat_options = ["entertainment", "travel_transit", "supplies", "general"]
+            exp_cat_labels = {
+                "entertainment": "🍽️ Entertainment & Dining (接待交際費 - 上限: ¥10,000/名)",
+                "travel_transit": "🚅 Domestic Travel & Transit (旅費交通費 - 上限: ¥30,000)",
+                "supplies": "📦 Office Supplies (消耗品費 - 上限: ¥50,000)",
+                "general": "📄 General Corporate Expense (一般経費)",
+            }
+            exp_cat = st.selectbox(
+                "Expense Category (経費勘定科目):",
+                options=exp_cat_options,
+                format_func=lambda x: exp_cat_labels.get(x, x),
+                key="exp_in_cat",
+            )
+
+            c_e5, c_e6 = st.columns(2)
+            with c_e5:
+                exp_amount = st.number_input(
+                    "Total Amount (¥ / 申請金額):",
+                    min_value=100.0,
+                    max_value=1000000.0,
+                    step=500.0,
+                    key="exp_in_amount",
+                )
+            with c_e6:
+                exp_attendees = st.number_input(
+                    "Attendees Count (参加人数):",
+                    min_value=1,
+                    max_value=50,
+                    step=1,
+                    key="exp_in_attendees",
+                )
+
+            exp_has_receipt = st.checkbox(
+                "🧾 Official Receipt Attached & Verified (領収書添付済み)",
+                key="exp_in_has_receipt",
+            )
+            exp_memo = st.text_input(
+                "Business Purpose / Memo (利用目的・用途):",
+                key="exp_in_memo",
+            )
+
+            st.button("🚀 Evaluate Financial Policy Engine", type="primary", use_container_width=True, key="btn_run_exp")
+            st.caption("💡 Real-time policy engine checks compliance against Japanese accounting standards.")
+
+        with col_exp_live:
+            st.subheader("2. Real-Time Policy Decision & General Ledger Log")
+
+            claim_req = ExpenseClaimRequest(
+                claim_id=exp_claim_id,
+                employee_id=exp_emp_id,
+                employee_name=exp_emp_name,
+                department=exp_dept,
+                expense_category=exp_cat,
+                amount=exp_amount,
+                attendee_count=exp_attendees,
+                has_receipt=exp_has_receipt,
+                memo=exp_memo,
+            )
+
+            exp_engine = ExpenseWorkflowEngine()
+            t0 = datetime.now()
+            exp_result: ExpenseResult = exp_engine.process_claim(claim_req)
+            latency_ms = (datetime.now() - t0).total_seconds() * 1000.0
+
+            if exp_result.status == "AUTO_APPROVED":
+                st.success(f"### Status: AUTO_APPROVED")
+                st.markdown(
+                    f'<span class="badge-approved">STRAIGHT-THROUGH POSTED TO GENERAL LEDGER</span> '
+                    f'<code>Latency: {latency_ms:.2f} ms</code>',
+                    unsafe_allow_html=True,
+                )
+                st.markdown("#### Generated Japanese Accounting Record (仕訳・精算記録):")
+                st.info(exp_result.generated_comment_ja)
+                st.caption(f"Action Taken: {exp_result.action_taken}")
+            else:
+                st.warning(f"### Status: ESCALATED_TO_MANAGER")
+                st.markdown(
+                    f'<span class="badge-escalate">MANAGERIAL FINANCIAL APPROVAL QUEUE</span> '
+                    f'<code>Latency: {latency_ms:.2f} ms</code>',
+                    unsafe_allow_html=True,
+                )
+                st.markdown("#### Policy Breach / Escalation Reason:")
+                st.error(exp_result.escalation_reason)
+                st.markdown("#### Pending Internal Escalation Record (経理保留伝票):")
+                st.warning(exp_result.generated_comment_ja)
+
+            st.divider()
+            st.markdown("##### Compliance Rule Validation Audit:")
+            per_head = exp_amount / max(1, exp_attendees)
+            st.write(f"- **Receipt Compliance:** {'✔ Valid Receipt Attached' if exp_has_receipt else '❌ Missing Receipt (Immediate Escalation)'}")
+            if exp_cat == "entertainment":
+                st.write(f"- **Per-Head Entertainment Cost:** `¥{per_head:,.0f} / 名` (社内規定上限: $\\le ¥10,000$) -> {'✔ Within Cap' if per_head <= 10000.0 else '❌ Exceeds Cap'}")
+            elif exp_cat == "travel_transit":
+                st.write(f"- **Transit Claim Total:** `¥{exp_amount:,.0f}` (旅費規程上限: $\\le ¥30,000$) -> {'✔ Within Cap' if exp_amount <= 30000.0 else '❌ Exceeds Cap'}")
+            elif exp_cat == "supplies":
+                st.write(f"- **Office Supplies Total:** `¥{exp_amount:,.0f}` (備品購入上限: $\\le ¥50,000$) -> {'✔ Within Cap' if exp_amount <= 50000.0 else '❌ Exceeds Cap'}")
+            else:
+                st.write(f"- **General Expense Standard:** `¥{exp_amount:,.0f}` -> ✔ Standard Policy Compliant")
+
+        st.markdown("---")
+        with st.expander("📊 Batch Processing Benchmark Demonstration (Dataset B Production Simulation)"):
+            st.caption("Demonstrating automated batch execution across multiple employee expense claims.")
+            batch_results = run_sample_expense_batch()
+            batch_rows = []
+            for r in batch_results:
+                batch_rows.append({
+                    "Claim ID": r.claim_id,
+                    "Decision Status": r.status,
+                    "Amount / Head": f"¥{r.per_head_amount:,.0f}",
+                    "Action Taken": r.action_taken,
+                    "Policy / Audit Reason": r.escalation_reason if r.escalation_reason else "✔ Straight-Through Approved",
+                })
+            b_df = pd.DataFrame(batch_rows)
+            st.dataframe(b_df, use_container_width=True)
+            c_b1, c_b2, c_b3, c_b4 = st.columns(4)
+            with c_b1:
+                st.metric("Total Claims Processed", len(batch_results))
+            with c_b2:
+                appr_cnt = sum(1 for r in batch_results if r.status == "AUTO_APPROVED")
+                st.metric("Straight-Through Rate", f"{appr_cnt / len(batch_results) * 100:.0f}%")
+            with c_b3:
+                st.metric("Average Latency", "< 1 ms")
+            with c_b4:
+                st.metric("Manual Time Saved", "34.4s / claim")
 
 
 

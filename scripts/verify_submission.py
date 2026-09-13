@@ -181,8 +181,39 @@ def verify_prototype() -> bool:
         passed_breach = res_breach.status == "ESCALATED_TO_MANAGER"
         print(f"  {check_mark(passed_breach)} Price Breach Request -> {res_breach.status} (Expected: ESCALATED_TO_MANAGER)")
 
-        return passed_ok and passed_breach
+        # Test Expense Automation (Rank #2 Multi-Process Extension)
+        from src.automation.expense_automation import ExpenseWorkflowEngine, ExpenseClaimRequest
+
+        exp_engine = ExpenseWorkflowEngine()
+        exp_ok = exp_engine.process_claim(ExpenseClaimRequest(
+            claim_id="EXP-VERIFY-01",
+            employee_id="EMP-01",
+            employee_name="山田 太郎",
+            department="営業部",
+            expense_category="entertainment",
+            amount=15000.0,
+            attendee_count=2,  # ¥7,500 <= ¥10,000
+            has_receipt=True
+        ))
+        passed_exp_ok = exp_ok.status == "AUTO_APPROVED"
+        print(f"  {check_mark(passed_exp_ok)} Expense Standard Claim -> {exp_ok.status} (Expected: AUTO_APPROVED)")
+
+        exp_breach = exp_engine.process_claim(ExpenseClaimRequest(
+            claim_id="EXP-VERIFY-02",
+            employee_id="EMP-02",
+            employee_name="佐藤 一郎",
+            department="企画部",
+            expense_category="entertainment",
+            amount=30000.0,
+            attendee_count=2,  # ¥15,000 > ¥10,000 limit
+            has_receipt=True
+        ))
+        passed_exp_breach = exp_breach.status == "ESCALATED_TO_MANAGER"
+        print(f"  {check_mark(passed_exp_breach)} Expense Limit Breach -> {exp_breach.status} (Expected: ESCALATED_TO_MANAGER)")
+
+        return passed_ok and passed_breach and passed_exp_ok and passed_exp_breach
     except Exception as e:
+
         print(f"  {check_mark(False)} Prototype verification exception: {e}")
         return False
 

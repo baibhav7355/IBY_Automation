@@ -163,6 +163,18 @@ app.post('/api/v1/supplier-requests/process', async (req, res) => {
 
 The prototype includes an automated verification test suite ([`tests/test_automation.py`](file:///c:/IBY_Japan/tests/test_automation.py)), confirming 100% test pass rates across auto-approval, policy threshold enforcement, error handling, and batch execution.
 
+### 3.6 Multi-Process Automation Extension: Expense Processing Engine (Covering 57.7% Back-Office Volume)
+
+To demonstrate architectural scalability beyond procurement, we extended our deterministic policy engine pattern to the client's **Rank #2 operational bottleneck: `expense_processing`** (61 executions, 35.0 active minutes, 9.44 friction score). Together with `supplier_communication` (100 executions), these two automated domains capture **57.7% of all enterprise back-office operational volume** (161 of 279 transactions).
+
+Implemented in [`src/automation/expense_automation.py`](file:///c:/IBY_Japan/src/automation/expense_automation.py) and verified in [`tests/test_expense_automation.py`](file:///c:/IBY_Japan/tests/test_expense_automation.py), the `ExpenseWorkflowEngine` enforces Japanese corporate accounting standards:
+1. **Entertainment Expenses (接待交際費 / *settai_keihi_kitei*):** Validates attendee counts and enforces the $\le ¥10,000$ per-head corporate tax deduction threshold. Over-budget VIP dining is automatically flagged and routed to department directors (`ESCALATED_TO_MANAGER`).
+2. **Domestic Business Travel (旅費交通費 / *ryohi_kotsu_kitei*):** Auto-approves standardized Shinkansen and transit claims $\le ¥30,000$, reserving managerial review for exceptions.
+3. **Office Supplies (消耗品費):** Enforces a straight-through threshold of $\le ¥50,000$.
+4. **Mandatory Receipt Compliance (領収書照合):** Zero-tolerance audit gate requiring attached tax receipts before posting to the general ledger.
+
+This dual-engine architecture demonstrates the modular FDE approach: standardized transaction archetypes achieve sub-millisecond execution and straight-through ERP journal entry, while managerial governance is strictly maintained for contractual and fiduciary variances.
+
 ---
 
 ## 4. Residual Manual Work & Expected Operational Impact
