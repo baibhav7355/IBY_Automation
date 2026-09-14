@@ -20,6 +20,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from src.pipeline.loader import load_session_events
 from src.segmentation.segmenter import GoldenThreadSegmenter, merge_segments
+from src.segmentation.ml_segmenter import MLGoldenThreadSegmenter
 
 
 def parse_args() -> argparse.Namespace:
@@ -30,12 +31,14 @@ def parse_args() -> argparse.Namespace:
                    help="Dataset directory (default: dataset_a)")
     p.add_argument("--output", type=Path, default=Path("segments.jsonl"),
                    help="Output segments file (default: segments.jsonl)")
+    p.add_argument("--mode", choices=["heuristic", "ml"], default="heuristic",
+                   help="Segmentation engine: 'heuristic' (baseline) or 'ml' (two-stage trained ML models)")
     p.add_argument("--no-eval", action="store_true",
                    help="Skip evaluation step")
     p.add_argument("--tolerance", type=int, default=5,
                    help="Boundary tolerance in seconds for evaluator (default: 5)")
     p.add_argument("--use-rules", action="store_true",
-                   help="Use domain heuristic rules for labeling instead of mock fallback")
+                   help="Use domain heuristic rules for labeling instead of mock fallback (heuristic mode)")
     p.add_argument("--max-gap-s", type=int, default=30,
                    help="Maximum gap in seconds between segments to allow semantic merging (default: 30)")
     return p.parse_args()
@@ -52,7 +55,7 @@ def main() -> None:
     session_dirs = sorted(
         [p for p in args.dataset.iterdir() if p.is_dir() and p.name.startswith("ses_")]
     )
-    print(f"Found {len(session_dirs)} sessions in {args.dataset}")
+    print(f"Found {len(session_dirs)} sessions in {args.dataset} (Mode: {args.mode.upper()})")
 
     t0 = time.perf_counter()
     total_segments = 0
@@ -64,10 +67,13 @@ def main() -> None:
             events = load_session_events(ses_dir, text_input_policy="drop")
             total_events += len(events)
 
-            segmenter = GoldenThreadSegmenter(
-                session_id=session_id,
-                fallback_to_rules=args.use_rules,
-            )
+            if args.mode == "ml":
+                segmenter = MLGoldenThreadSegmenter(session_id=session_id)
+            else:
+                segmenter = GoldenThreadSegmenter(
+                    session_id=session_id,
+                    fallback_to_rules=args.use_rules,
+                )
             segments = list(segmenter.segment(events))
             total_segments += len(segments)
 

@@ -1,5 +1,6 @@
 """src/segmentation/__init__.py"""
 from src.segmentation.llm_labeler import LABELING_PROMPT_TEMPLATE, predict_label
+from src.segmentation.ml_segmenter import MLGoldenThreadSegmenter
 from src.segmentation.segmenter import (
     GoldenThreadSegmenter,
     Segment,
@@ -12,6 +13,7 @@ from src.segmentation.segmenter import (
 
 __all__ = [
     "GoldenThreadSegmenter",
+    "MLGoldenThreadSegmenter",
     "Segment",
     "generate_segment_label",
     "merge_segments",
