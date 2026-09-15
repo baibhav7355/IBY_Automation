@@ -91,7 +91,12 @@
      - Supported `Microsoft Edge` as an active enterprise web browser alongside `Google Chrome`.
      - Mapped Dataset B web portal ports: `5132` (HR), `5133` (Finance), `5134` (Operations).
      - Mapped Dataset B Word document templates (e.g., `shinkuitorihikisaki_touroku_tetsuzuki`, `shinkui_keiyaku_tetsuzuki`, `getsujitsu_teigaku_torihikisaki_ichiran`, `expense_calc`, `budget_analysis`).
-  2. Executed segmentation pipeline on Dataset B (`scripts/run_segmentation.py --dataset dataset_b --output segments.jsonl --no-eval`) and generated the official deliverable `segments.jsonl` (279 distinct units of work recovered across 12 business process categories).
+  2. Executed segmentation pipeline on Dataset B (`scripts/run_segmentation.py --dataset dataset_b --output segments.jsonl --no-eval`) and generated the official deliverable `segments.jsonl` (279 distinct units of work recovered across 12 business process categories):
+     - **Architectural Rationale (Why Deliverable 1 Relies on v1 Heuristics to Prevent Overfitting):**
+       - *Cross-Department & Staff Distributional Shift:* The employees executing workflows in Dataset A (`Marcos`, `yuvraj`, `R36BQBTE`, `JAYESH`, etc.) are completely different from those in Dataset B (`CHAITANYA0BCF`, `LAPTOP-76QMG9DE`, `NEELA9BAF`, etc.). Moreover, Dataset B introduces unseen departments, ports (`5132–5134` vs. `5122–5124`), and application environments (`Microsoft Edge Profile 1` vs. `Google Chrome`).
+       - *Overfitting Risk of Supervised Models:* Training complex supervised classifiers solely on Dataset A introduces a severe risk of memorizing operator-specific timing quirks, DOM selectors, and port numbers, causing erratic boundary cuts when applied to unseen operators.
+       - *Heuristic Domain Invariance:* The v1 Heuristic Golden Thread state machine relies strictly on universal human operational invariants: entity copy-paste lifecycles (`Ctrl+C` / `Ctrl+V`), navigation to dashboard hubs (`/dashboard`), and natural inactivity pauses (>60s). These invariants hold true across any operator or department.
+       - *Empirical Alignment:* This approach yielded an average segment duration of **35.8 seconds** on Dataset B, closely matching Dataset A's **37.1-second ground truth duration**.
   3. Built `src/analytics/process_miner.py` and executed analysis across Dataset B's `segments.jsonl` and raw `events.jsonl`:
      - Computed Volume ($N$), Total Cumulative Duration (min), Average Duration (s), App Switches, Clipboard Transitions, Friction ($F = \text{App Switches} + \text{Clipboard Ops}$), and Staff/Session Involvement.
      - Implemented the client ROI scoring function:
@@ -187,6 +192,9 @@
      - **Segment IoU F1 ($\ge 0.5$):** Jumped from **34.2%** to **77.3%** (**+43.1% absolute lift**; Precision: 73.1%, Recall: 82.7%).
      - **Label Consistency Purity:** Jumped from **65.8%** to **93.9%** (**+28.1% absolute lift**).
      - Verified zero regressions against `verify_submission.py` and maintained exactly 279 Dataset B segments.
+  6. **Generalization Analysis & Deliverable Protection:**
+     - Analyzed why deploying the Two-Stage ML pipeline directly onto Dataset B without department-specific fine-tuning consolidated processes into 77 macro-segments (132.5s avg). Because Dataset A and Dataset B feature entirely different operators (`Marcos`, `yuvraj`, etc. vs. `CHAITANYA0BCF`, `NEELA9BAF`), portal ports, and browsers, supervised ML models run the inherent risk of overfitting to Dataset A's specific operational patterns.
+     - Confirmed the engineering decision to keep the primary deliverable `segments.jsonl` on the domain-invariant v1 heuristic state machine (279 segments, 35.8s avg, matching ground-truth transaction pace), while providing the ML architecture (`src/segmentation/ml_segmenter.py`) as an advanced platform for future in-domain deployments.
 
 ---
 
