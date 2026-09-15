@@ -246,8 +246,15 @@ c:/IBY_Japan/
 ├── work_log.md                         # Deliverable 4: 7-day chronological diary + GenAI disclosure
 ├── segments.jsonl                      # Deliverable 1: 279 production segments (Dataset B)
 ├── process_mining_results.json         # Step 2: Mined metrics & ROI rankings
-├── colab_notebook.ipynb                # GPU vision batch processing notebook
 ├── app.py                              # Live Streamlit dashboard (Procurement & Finance)
+│
+├── experiments/                        # Computer Vision Experimentation & Colab Pipeline
+│   ├── README.md                       # Vision anomaly detection documentation & methodology
+│   ├── vision_boundary.ipynb           # Full executed Colab notebook on T4 GPU (34,563 screenshots)
+│   ├── colab_notebook.ipynb            # Standalone portable Colab template notebook
+│   ├── vision_boundaries_multiframe.jsonl # Raw 4-frame relational anomaly detection boundaries
+│   ├── evaluated_segments.jsonl        # Converted ISO-8601 session segments (5,831 segments)
+│   └── convert_vision_boundaries.py    # Boundary-to-segment conversion utility script
 │
 ├── src/                                # Core Modular Library
 │   ├── pipeline/
