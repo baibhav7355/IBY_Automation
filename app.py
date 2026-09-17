@@ -4,7 +4,9 @@ app.py
 Interactive Streamlit Executive Dashboard & Live Automation Engine
 Client: Enterprise Back-Office Operations Group
 Engagement: Internship Selection Task Submission (FDE Track)
-Author: Baibhav Gond (Indian Institute of Technology Bhubaneswar)
+Author: Baibhav Gond
+Email: baibhav0019@gmail.com
+Institute: Indian Institute of Technology Bhubaneswar
 """
 
 from __future__ import annotations
@@ -41,9 +43,10 @@ from src.automation.expense_automation import (
 # -----------------------------------------------------------------------------
 # PAGE CONFIG & STYLING
 # -----------------------------------------------------------------------------
+logo_icon = "assets/logo.png" if Path("assets/logo.png").exists() else "📊"
 st.set_page_config(
-    page_title="IBY Japan | FDE Process Mining & Automation",
-    page_icon="⚡",
+    page_title="I'm beside you | FDE Process Mining & Automation",
+    page_icon=logo_icon,
     layout="wide",
     initial_sidebar_state="expanded",
 )
@@ -136,15 +139,22 @@ def load_process_mining_results() -> List[Dict[str, Any]]:
 # SIDEBAR
 # -----------------------------------------------------------------------------
 with st.sidebar:
-    st.image("https://img.icons8.com/fluency/96/artificial-intelligence.png", width=64)
-    st.title("IBY Japan Telemetry")
-    st.caption("Forward Deployed Engineer (FDE) Portfolio")
+    if Path("assets/logo.png").exists():
+        st.image("assets/logo.png", use_container_width=True)
+    st.markdown(
+        """
+        <div style="font-size: 1.35rem; font-weight: 700; margin-top: 6px; margin-bottom: 12px; line-height: 1.3;">
+            Process Mining & Automation
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
     
     st.markdown(
         """
-        **Author:** Baibhav Gond  
-        **Institution:** IIT Bhubaneswar  
-        **Role:** FDE Candidate Selection Task  
+        **Name:** Baibhav Gond  
+        **Email:** baibhav0019@gmail.com  
+        **Institute:** Indian Institute of Technology Bhubaneswar  
         **Sprint:** 7 Days (Production Ready)  
         """
     )
@@ -155,7 +165,8 @@ with st.sidebar:
         [
             "Executive ROI Dashboard (Step 2)",
             "Live Automation Prototype (Step 3)",
-            "Telemetry & Process Explorer (Step 1)",
+            "Segmentation Approaches & Benchmark",
+            "Dataset B Telemetry & Segments Explorer (Step 1)",
             "Implementation Risk Matrix",
             "7-Day Sprint Work Log & Audit",
         ],
@@ -164,7 +175,7 @@ with st.sidebar:
 
     st.divider()
     st.markdown("### System Health")
-    st.success("✔ 41 / 41 Pytest Tests Passing")
+    st.success("✔ 46 / 46 Pytest Tests Passing")
     st.info("✔ 279 Dataset B Segments Recovered")
     st.caption("Git Branch: `master` | Python 3.10+")
 
@@ -266,16 +277,34 @@ if menu == "Executive ROI Dashboard (Step 2)":
         with c1:
             st.markdown("##### Cumulative Time Consumption (Minutes)")
             chart_df = df_mining.set_index("process")[["total_duration_min"]].sort_values("total_duration_min", ascending=True)
-            st.bar_chart(chart_df, color="#0d6efd")
+            st.bar_chart(
+                chart_df,
+                color="#0d6efd",
+                x_label="Business Process",
+                y_label="Total Time (Minutes)",
+            )
 
         with c2:
             st.markdown("##### Operational Friction (App Switches + Clipboard Copy/Pastes)")
             fric_df = df_mining.set_index("process")[["friction"]].sort_values("friction", ascending=True)
-            st.bar_chart(fric_df, color="#fd7e14")
+            st.bar_chart(
+                fric_df,
+                color="#fd7e14",
+                x_label="Business Process",
+                y_label="Friction Score (Switches + Copies)",
+            )
 
         st.markdown("##### Automation ROI Score vs. Execution Volume")
         scatter_df = df_mining[["process", "volume", "roi_score", "friction"]].set_index("process")
-        st.scatter_chart(scatter_df, x="volume", y="roi_score", size="friction", color="#198754")
+        st.scatter_chart(
+            scatter_df,
+            x="volume",
+            y="roi_score",
+            size="friction",
+            color="#198754",
+            x_label="Execution Volume (N)",
+            y_label="Client ROI Score",
+        )
 
 
 # -----------------------------------------------------------------------------
@@ -513,7 +542,7 @@ elif menu == "Live Automation Prototype (Step 3)":
                 "has_receipt": True,
                 "memo": "Client dinner following contract agreement",
             },
-            "Preset 2: Shinkansen Business Travel (¥28,500 <= ¥30,000 -> Auto-Approved)": {
+            "Preset 2: Bullet Train Business Travel (¥28,500 <= ¥30,000 -> Auto-Approved)": {
                 "claim_id": "EXP-2026-103",
                 "emp_id": "EMP-3055",
                 "emp_name": "Hanako Suzuki",
@@ -736,14 +765,268 @@ elif menu == "Live Automation Prototype (Step 3)":
 
 
 # -----------------------------------------------------------------------------
-# VIEW 3: TELEMETRY & PROCESS EXPLORER
+# VIEW 3: SEGMENTATION APPROACHES & ACCURACY BENCHMARK
 # -----------------------------------------------------------------------------
-elif menu == "Telemetry & Process Explorer (Step 1)":
-    st.title("🔍 Telemetry & Recovered Units of Work (Step 1)")
+elif menu in ("Segmentation Approaches & Benchmark", "Three Segmentation Approaches & Benchmark", "Three Segmentation Approaches & Benchmark (Step 1)"):
+    st.title("🔬 Segmentation Approaches & Benchmark")
+    st.markdown(
+        """
+        *From Unindexed Workstation Telemetry to Coherent Business Processes.*  
+        To tackle the challenge of turning raw keystrokes, clicks, and window titles into distinct business operations, 
+        three progressive segmentation architectures were developed, benchmarked against 63 ground-truth sessions in **Dataset A**, 
+        and deployed to **Dataset B**.
+        """
+    )
+
+    # Top KPI summary cards
+    c_kpi1, c_kpi2, c_kpi3, c_kpi4 = st.columns(4)
+    with c_kpi1:
+        st.metric(
+            label="v3 Boundary F1-Score",
+            value="81.4%",
+            delta="+34.9% vs Raw Baseline",
+        )
+    with c_kpi2:
+        st.metric(
+            label="v3 Segment IoU F1",
+            value="77.3%",
+            delta="+43.1% vs Raw Baseline",
+        )
+    with c_kpi3:
+        st.metric(
+            label="v3 Label Consistency",
+            value="93.9%",
+            delta="+84.7% vs Raw Baseline",
+        )
+    with c_kpi4:
+        st.metric(
+            label="Dataset B Submission",
+            value="v1 Heuristic",
+            delta="279 Segments (35.8s avg)",
+        )
+
+    st.markdown("---")
+
+    tab_scorecard, tab_approaches, tab_per_process, tab_eval_cli = st.tabs([
+        "📊 Accuracy Comparison Scorecard",
+        "🛠️ The Three Technical Approaches",
+        "📋 Per-Process Classification Purity",
+        "▶️ Live Evaluation Runner (Dataset A)",
+    ])
+
+    with tab_scorecard:
+        st.subheader("Comprehensive Accuracy Scorecard (Dataset A Ground Truth Benchmark)")
+        st.caption("Evaluated across all 63 sessions (2,009 true executions) in Dataset A using `scripts/evaluate_dataset_a.py` with ±5s boundary tolerance.")
+
+        scorecard_rows = [
+            {
+                "Evaluation Metric": "Total Predicted Segments",
+                "Raw Baseline": "2,456",
+                "v1 Heuristic (Golden Thread)": "2,010 (True: 2,009)",
+                "v2 Vision PoC (MobileNet)": "5,831",
+                "v3 Two-Stage Supervised ML": "1,989 (True: 2,009)",
+                "Net Improvement (v3 vs Raw)": "-467 (Resolved Over-segmentation)",
+            },
+            {
+                "Evaluation Metric": "Boundary Precision",
+                "Raw Baseline": "41.5%",
+                "v1 Heuristic (Golden Thread)": "45.4%",
+                "v2 Vision PoC (MobileNet)": "13.9%",
+                "v3 Two-Stage Supervised ML": "79.7%",
+                "Net Improvement (v3 vs Raw)": "+38.2%",
+            },
+            {
+                "Evaluation Metric": "Boundary Recall",
+                "Raw Baseline": "53.5%",
+                "v1 Heuristic (Golden Thread)": "48.1%",
+                "v2 Vision PoC (MobileNet)": "43.8%",
+                "v3 Two-Stage Supervised ML": "83.9%",
+                "Net Improvement (v3 vs Raw)": "+30.4%",
+            },
+            {
+                "Evaluation Metric": "Boundary F1-Score",
+                "Raw Baseline": "46.5%",
+                "v1 Heuristic (Golden Thread)": "46.4%",
+                "v2 Vision PoC (MobileNet)": "20.9%",
+                "v3 Two-Stage Supervised ML": "81.4%",
+                "Net Improvement (v3 vs Raw)": "+34.9%",
+            },
+            {
+                "Evaluation Metric": "Segment Precision",
+                "Raw Baseline": "49.1%",
+                "v1 Heuristic (Golden Thread)": "52.4%",
+                "v2 Vision PoC (MobileNet)": "10.4%",
+                "v3 Two-Stage Supervised ML": "73.1%",
+                "Net Improvement (v3 vs Raw)": "+24.0%",
+            },
+            {
+                "Evaluation Metric": "Segment Recall",
+                "Raw Baseline": "56.2%",
+                "v1 Heuristic (Golden Thread)": "59.6%",
+                "v2 Vision PoC (MobileNet)": "33.8%",
+                "v3 Two-Stage Supervised ML": "82.7%",
+                "Net Improvement (v3 vs Raw)": "+26.5%",
+            },
+            {
+                "Evaluation Metric": "Segment IoU F1 (≥ 0.5)",
+                "Raw Baseline": "34.2%",
+                "v1 Heuristic (Golden Thread)": "55.5%",
+                "v2 Vision PoC (MobileNet)": "15.7%",
+                "v3 Two-Stage Supervised ML": "77.3%",
+                "Net Improvement (v3 vs Raw)": "+43.1%",
+            },
+            {
+                "Evaluation Metric": "Label Consistency (Purity)",
+                "Raw Baseline": "9.2%",
+                "v1 Heuristic (Golden Thread)": "65.8%",
+                "v2 Vision PoC (MobileNet)": "16.8%",
+                "v3 Two-Stage Supervised ML": "93.9%",
+                "Net Improvement (v3 vs Raw)": "+84.7%",
+            },
+        ]
+        df_scorecard = pd.DataFrame(scorecard_rows)
+        st.dataframe(df_scorecard, use_container_width=True, hide_index=True)
+
+        st.markdown("##### Visual Accuracy Progression Across Model Generations")
+        chart_data = pd.DataFrame({
+            "Approach": [
+                "Raw Baseline",
+                "v1 Heuristic",
+                "v2 Vision PoC",
+                "v3 Supervised ML",
+            ],
+            "Boundary F1 (%)": [46.5, 46.4, 20.9, 81.4],
+            "Segment IoU F1 (%)": [34.2, 55.5, 15.7, 77.3],
+            "Label Purity (%)": [9.2, 65.8, 16.8, 93.9],
+        }).set_index("Approach")
+        st.bar_chart(chart_data)
+
+        st.info(
+            "💡 **Key Observation:** The v3 Two-Stage ML pipeline achieved a massive leap in accuracy: "
+            "Boundary F1 jumped to **81.4%**, Segment IoU F1 reached **77.3%**, and Label Purity achieved **93.9%** "
+            "— matching true execution counts almost 1-to-1 (1,989 predicted vs. 2,009 true executions)."
+        )
+
+    with tab_approaches:
+        st.subheader("Detailed Architecture of the Three Approaches")
+
+        exp1 = st.expander("🧵 Tier 1: v1 Heuristic State Machine (Production Deliverable)", expanded=True)
+        with exp1:
+            st.markdown(
+                """
+                **Design & Mechanics:**
+                - **Entity-Centric Anchor Tracing:** Tracks business entities (PO numbers, employee codes, transaction IDs) via `clipboard_change` (`Ctrl+C`) and follows them as users paste (`Ctrl+V`) across application boundaries (Web Portal $\\leftrightarrow$ Excel $\\leftrightarrow$ Word).
+                - **Topological Navigation:** Detects returns to portal navigation hubs (`/dashboard`, `/index`) as natural task boundaries.
+                - **Inactivity Windows:** Emits natural task completion boundaries during prolonged operator pauses (>60 seconds).
+                - **Adjacent Semantic Merging:** Consolidates adjacent micro-fragments ($\\le 30$s gap) sharing identical semantic labels without conflicting entity anchors.
+                
+                **Why v1 Heuristics was chosen for Deliverable 1 (`segments.jsonl`):**
+                - **Immunity to Distribution Shifts:** Dataset A was recorded on Google Chrome on ports `5122–5124` with operators Marcos, yuvraj, etc. Dataset B introduces unseen operators (`CHAITANYA0BCF`, `LAPTOP-76QMG9DE`, `NEELA9BAF`) using **Microsoft Edge** on new ports `5132–5134`.
+                - **Domain Invariance:** The v1 state machine relies on universal human work patterns rather than memorized port numbers, ensuring zero overfitting.
+                - **Empirical Ground-Truth Match:** Produced **279 segments** with an average duration of **35.8 seconds**—an almost exact mirror of Dataset A's verified ground truth (**37.1 seconds**).
+                """
+            )
+
+        exp2 = st.expander("👁️ Tier 2: v2 Computer Vision PoC (MobileNet Anomaly Detector)")
+        with exp2:
+            st.markdown(
+                """
+                **Motivation:**
+                Text-based telemetry cannot observe 'silent' UI state updates—such as asynchronous AJAX data table reloads, modal dialog popups, and tab switches without keystrokes.
+
+                **Implementation (`src/experiments/vision_poc.py`):**
+                - Evaluated all **34,563 1080p desktop screenshots** from Dataset A using `MobileNet_V3_Small` on Google Colab T4 GPUs, compressing each image into a 1,000-dimensional semantic vector.
+                - Engineered a **4-frame relational rolling window** ($f_1, f_2, f_3, f_4$) to evaluate transition drop magnitude against surrounding visual stability:
+                $$\\text{Drop Magnitude} = \\frac{\\text{Stability}_{\\text{before}} + \\text{Stability}_{\\text{after}}}{2} - \\text{Transition Similarity}$$
+                - Cut false-positive visual cuts by **38.1%** (from 9,418 to 5,831 segments) and more than doubled Segment IoU F1 from 7.3% to **15.7%**.
+                - *Takeaway:* Valuable for multimodal enterprise systems, but raw vision is sensitive to animated blinking cursors and minor window focus changes.
+                """
+            )
+
+        exp3 = st.expander("🧠 Tier 3: v3 Two-Stage Supervised Machine Learning Pipeline")
+        with exp3:
+            st.markdown(
+                """
+                **Two-Stage Architecture:**
+                - **Stage 1: Temporal & Interaction Boundary Classifier (`scripts/train_boundary_model.py`):**
+                  - Extracted 18 tabular temporal and interaction features per event (`dt_prev`, `dt_next`, `is_app_sw`, `is_clip`, `clip_delta`, `has_id`, `hub`, `url_depth`, `app_cat`, `idle_10s`, `idle_30s`, etc.) across 162,650 event samples from Dataset A.
+                  - Trained a `HistGradientBoostingClassifier` with balanced class weights, achieving **0.9274 ROC-AUC** and **0.7674 PR-AUC** on validation sets.
+                - **Stage 2: Calibrated Semantic Process Classifier (`scripts/train_label_classifier.py`):**
+                  - Tokenizes system port signatures (`SYS_HR_5122`, `SYS_FIN_5123`, `SYS_OPS_5124`), route hashes, native window titles, form input labels, and OCR text across 1,734 ground truth executions.
+                  - Trained a calibrated `TF-IDF + LogisticRegression` pipeline, achieving **95.1% validation accuracy** and **0.952 Macro F1** across all 15 business processes.
+                - **Inference Optimizations (`src/segmentation/ml_segmenter.py`):**
+                  - **12s Adaptive Refractory Peak Suppression:** Suppresses micro-jitter cuts by retaining only the highest-probability boundary candidate within a 12-second rolling window (+34.3% precision boost).
+                  - **35s Semantic Post-Processing & Merging:** Merges adjacent fragments sharing identical labels within 35 seconds (+21.8% IoU F1 boost).
+                """
+            )
+
+    with tab_per_process:
+        st.subheader("Per-Process Classification Purity (v3 ML Engine)")
+        st.caption("Detailed classification accuracy across all 15 business process categories on Dataset A ground truth.")
+
+        per_process_rows = [
+            {"Business Process": "inventory_adjustment", "Code": "L", "Classification Purity": "100.0%", "Matched Samples": "75 / 75", "Operational Domain": "Supply Chain & Warehousing"},
+            {"Business Process": "resident_tax_verification", "Code": "A", "Classification Purity": "99.1%", "Matched Samples": "116 / 117", "Operational Domain": "Human Resources & Payroll"},
+            {"Business Process": "invoice_approval", "Code": "F", "Classification Purity": "99.1%", "Matched Samples": "113 / 114", "Operational Domain": "Financial Accounting"},
+            {"Business Process": "return_processing", "Code": "O", "Classification Purity": "98.7%", "Matched Samples": "78 / 79", "Operational Domain": "Supply Chain Logistics"},
+            {"Business Process": "payment_processing", "Code": "J", "Classification Purity": "98.6%", "Matched Samples": "70 / 71", "Operational Domain": "Treasury & Disbursements"},
+            {"Business Process": "supplier_communication", "Code": "M", "Classification Purity": "98.4%", "Matched Samples": "122 / 124", "Operational Domain": "Procurement & Sourcing"},
+            {"Business Process": "budget_variance_analysis", "Code": "I", "Classification Purity": "97.8%", "Matched Samples": "91 / 93", "Operational Domain": "Financial FP&A"},
+            {"Business Process": "onboarding_verification", "Code": "E", "Classification Purity": "97.4%", "Matched Samples": "74 / 76", "Operational Domain": "Human Resources"},
+            {"Business Process": "leave_application_processing", "Code": "C", "Classification Purity": "97.3%", "Matched Samples": "107 / 110", "Operational Domain": "Human Resources"},
+            {"Business Process": "expense_processing", "Code": "G", "Classification Purity": "96.6%", "Matched Samples": "86 / 89", "Operational Domain": "General Accounting"},
+            {"Business Process": "shipment_tracking", "Code": "N", "Classification Purity": "92.5%", "Matched Samples": "86 / 93", "Operational Domain": "Outbound Logistics"},
+            {"Business Process": "bank_reconciliation", "Code": "H", "Classification Purity": "86.3%", "Matched Samples": "101 / 117", "Operational Domain": "Financial Accounting"},
+            {"Business Process": "order_processing", "Code": "K", "Classification Purity": "85.6%", "Matched Samples": "77 / 90", "Operational Domain": "Customer Sales Operations"},
+            {"Business Process": "payroll_adjustment", "Code": "B", "Classification Purity": "81.9%", "Matched Samples": "86 / 105", "Operational Domain": "Human Resources & Payroll"},
+            {"Business Process": "insurance_pension_processing", "Code": "D", "Classification Purity": "79.6%", "Matched Samples": "78 / 98", "Operational Domain": "Statutory Compliance"},
+        ]
+        df_per_process = pd.DataFrame(per_process_rows)
+        st.dataframe(df_per_process, use_container_width=True, hide_index=True)
+
+        st.metric(label="Macro Average Classification Purity", value="93.9%", delta="1,245 / 1,326 Matched Executions")
+
+    with tab_eval_cli:
+        st.subheader("Run Evaluation Harness on Dataset A (Live Execution)")
+        st.caption("Executes `scripts/evaluate_dataset_a.py` against the ground-truth manifests in `dataset_a/`.")
+
+        eval_model_options = {
+            "v3 Two-Stage ML Model (81.4% Boundary F1, 93.9% Purity)": "dataset_a/evaluated_segments_ml.jsonl",
+            "v1 Heuristic Baseline (46.4% Boundary F1, 65.8% Purity)": "dataset_a/evaluated_segments_baseline.jsonl",
+            "v2 Vision PoC Multi-Frame (20.9% Boundary F1, 16.8% Purity)": "dataset_a/evaluated_segments_multiframe.jsonl",
+        }
+        chosen_eval_label = st.selectbox("Select Model Prediction File:", list(eval_model_options.keys()))
+        pred_file = eval_model_options[chosen_eval_label]
+
+        if st.button("▶ Run scripts/evaluate_dataset_a.py", type="primary"):
+            import subprocess
+            cmd = [
+                sys.executable,
+                str(ROOT / "scripts" / "evaluate_dataset_a.py"),
+                "--predictions",
+                str(ROOT / pred_file),
+                "--dataset-dir",
+                str(ROOT / "dataset_a"),
+            ]
+            with st.spinner("Evaluating ground truth across 63 sessions..."):
+                proc = subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8")
+            if proc.returncode == 0:
+                st.success("✔ Evaluation Completed Successfully!")
+                st.code(proc.stdout)
+            else:
+                st.error("Evaluation Encountered an Issue:")
+                st.code(proc.stderr or proc.stdout)
+
+
+# -----------------------------------------------------------------------------
+# VIEW 4: DATASET B TELEMETRY & SEGMENTS EXPLORER
+# -----------------------------------------------------------------------------
+elif menu in ("Dataset B Telemetry & Segments Explorer (Step 1)", "Telemetry & Process Explorer (Step 1)"):
+    st.title("🔍 Dataset B Telemetry & Recovered Segments (Step 1)")
     st.markdown(
         """
         Recovered coherent units of work from Dataset B production events (`segments.jsonl`).  
-        Generated via the **Entity-Centric Golden Thread State Machine** + **LLM Semantic Classifier** + **Adjacent Segment Merger**.
+        Generated via the **Entity-Centric Golden Thread State Machine** (v1 Heuristic) across 15 sessions.
         """
     )
 
@@ -788,7 +1071,18 @@ elif menu == "Telemetry & Process Explorer (Step 1)":
         )
 
         st.subheader("Process Execution Duration Distribution")
-        st.bar_chart(filtered_df["duration_s"].clip(upper=120))
+        chart_data = pd.DataFrame({
+            "Execution Sequence (#)": range(1, len(filtered_df) + 1),
+            "Duration (Seconds)": filtered_df["duration_s"].clip(upper=120).values,
+        })
+        st.bar_chart(
+            chart_data,
+            x="Execution Sequence (#)",
+            y="Duration (Seconds)",
+            x_label="Execution Sequence (#)",
+            y_label="Duration (Seconds, Capped at 120s)",
+            color="#1C83E1",
+        )
 
 
 # -----------------------------------------------------------------------------
@@ -877,97 +1171,234 @@ elif menu == "7-Day Sprint Work Log & Audit":
     st.title("📖 7-Day Sprint Work Log & Verification")
     st.markdown(
         """
-        **Author:** Baibhav Gond (IIT Bhubaneswar)  
-        **Engagement:** Internship Selection Task  
-        Chronological diary of engineering trials, dead ends, and GenAI disclosures from [`work_log.md`](file:///c:/IBY_Japan/work_log.md).
+        **Enterprise Scope:** Corporate Back-Office Operations (HR, Finance, Procurement & Supply Chain)  
+        **Project:** PC Operation Log Analysis, Process Mining & Automation Proposal  
+        **Duration:** 7-Day Engagement | **Author:** Baibhav Gond  
+        **Email:** baibhav0019@gmail.com | **Institute:** Indian Institute of Technology Bhubaneswar  
+        *Chronological engineering diary of trials, dead ends, breakthroughs, and GenAI disclosures from [`work_log.md`](file:///c:/IBY_Japan/work_log.md).*
         """
     )
 
     st.divider()
 
-    st.subheader("Run Automated Submission Verification")
-    if st.button("▶ Run scripts/verify_submission.py"):
+    st.subheader("Run Automated Test Suite")
+    st.caption("Executes `pytest` across `tests/` to validate data ingestion, segmentation, evaluation, and automation prototypes.")
+    if st.button("▶ Run Pytest Suite", type="primary"):
         import subprocess
-        proc = subprocess.run(
-            [sys.executable, str(ROOT / "scripts" / "verify_submission.py")],
-            capture_output=True,
-            text=True,
-            encoding="utf-8",
-        )
+        with st.spinner("Running 46 unit & integration tests across tests/..."):
+            proc = subprocess.run(
+                [sys.executable, "-m", "pytest", "tests/"],
+                capture_output=True,
+                text=True,
+                encoding="utf-8",
+            )
         if proc.returncode == 0:
-            st.success("✔ Verification Succeeded: All 5 Checks Passed with 100% Compliance!")
+            st.success("✔ All 46 Pytest tests passed successfully!")
+            st.code(proc.stdout)
         else:
-            st.error("Verification Encountered Issues")
-        st.code(proc.stdout)
+            st.error("Pytest encountered issues:")
+            st.code(proc.stdout or proc.stderr or "No output captured.")
 
     st.divider()
-    st.subheader("Chronological Sprint Diary")
+    st.subheader("Chronological Sprint Diary (7 Days)")
 
     with st.expander("Day 1: Problem Ingestion, Architectural Scoping & Resilient Data Pipeline", expanded=True):
         st.markdown(
             """
-            - Initialized repository with modular architecture.
-            - Handled multi-chunk session stitching and enforced strict UTF-8 decoding for Japanese text.
-            - **Dead End Diagnosed:** Discovered `text_input_complete` is unreliable during IME conversions; dropped payload in favor of clipboard/element attributes.
+            **Objective:** Absorb the enterprise operational context, data schemas, and domain constraints; set up version control; build a production-grade multi-chunk data loader.
+            
+            **Key Actions Taken:**
+            - Ingested operational requirements and `DATA_SCHEMA.md` across HR (`5122`/`5132`), Finance (`5123`/`5133`), and Supply Chain (`5124`/`5134`).
+            - Initialized root Git repository with structured module boundaries: `src/pipeline/`, `src/segmentation/`, `src/analytics/`, `src/automation/`, and `tests/`.
+            - Built `src/pipeline/loader.py`: implemented `find_session_chunks`, `find_session_event_files`, and `load_session_events` with explicit UTF-8 decoding to handle Japanese characters (`Shift_JIS` / `CP932` vs `UTF-8`).
+            - Implemented unit tests in `tests/test_loader.py` covering multi-chunk chronological ordering, deduplication, and quirk filtering.
+            
+            **Trials & Dead Ends:**
+            - **Attempted:** Initially considered parsing `text_input_complete` to reconstruct input forms.
+            - **Dead End Diagnosed:** `text_input_complete` frequently fired with empty payloads or out-of-order text during rapid Japanese IME conversions.
+            - **Resolution:** Dropped `text_input_complete` payloads and designed the pipeline to rely on deterministic clipboard changes, navigation events, and UI element attributes.
             """
         )
 
     with st.expander("Day 2: Ground Truth Evaluation Harness & Exploratory Data Analysis (EDA)"):
         st.markdown(
-            """
-            - Built `scripts/evaluate_dataset_a.py` computing Boundary F1 (±5s tolerance), IoU, and Label Consistency.
-            - **Key Discoveries:** 100% of workflows start in web browser portals; typical 3-app triad signature; mean cycle time ~42s.
-            """
-        )
-
-    with st.expander("Day 3: 'Entity-Centric Golden Thread' State Machine"):
-        st.markdown(
-            """
-            - Designed state machine tracing clipboard entities across application switches.
-            - **Dead End Diagnosed:** Pure idle-gap segmentation failed (caused massive false positives whenever employees paused to read contracts).
-            """
-        )
-
-    with st.expander("Day 4: Baseline Evaluation, LLM Labeling & The Strategic FDE Pivot"):
-        st.markdown(
-            """
-            - Diagnosed over-segmentation defect on Dataset A.
-            - Built LLM labeling (`llm_labeler.py`) and semantic segment merger (`merge_segments`).
-            - Segments dropped from 2,456 to 2,018 (vs 2,009 ground truth executions); Label Consistency jumped from 9.2% to 66.6%.
-            - **Strategic FDE Decision:** Froze heuristic tuning on Dataset A at "good enough" to focus 40% of the sprint budget on high-ROI business mining and working automation.
+            r"""
+            **Objective:** Construct a rigorous, mathematically sound evaluation benchmark against Dataset A ground truth (`gt.jsonl` and `gt_manifest.json`) before writing segmentation algorithms.
+            
+            **Key Actions Taken:**
+            - Analyzed Dataset A (63 sessions, ~162,000 events, 2,009 ground-truth executions across 15 business processes `A` through `O`).
+            - **Operational Invariants Discovered:**
+              - *Start Invariant:* 100% of business processes start inside a web browser portal (`Google Chrome` in Dataset A, `Microsoft Edge` in Dataset B).
+              - *Consistent Triad:* Processes exhibit a characteristic 3-application signature (Web Portal $\leftrightarrow$ Desktop Document App [Excel/Word] $\leftrightarrow$ Reference Tool [Notepad/Explorer]).
+              - *Execution Cadence:* Mean cycle time across all 2,009 executions is ~42.3 seconds (IQR: 24s to 58s).
+            - Built `scripts/evaluate_dataset_a.py`:
+              - Boundary F1 with $\pm 5$-second tolerance window (Precision, Recall, F1).
+              - Segment-level IoU ($\ge 0.5$) for execution overlap scoring.
+              - Label Consistency (Macro Purity) scoring.
+            - Verified benchmark edge cases via `tests/test_evaluator.py`.
+            
+            **Trials & Dead Ends:**
+            - **Attempted:** Exact timestamp matching ($\pm 0$ seconds).
+            - **Dead End Diagnosed:** Human operators exhibit variable transition latency between reading screens and typing/clicking. Exact matching penalized valid boundaries by $\approx 85\%$.
+            - **Resolution:** Adopted $\pm 5$-second tolerance window reflecting human task initiation cadences while continuing to penalize spurious cuts.
             """
         )
 
-    with st.expander("Day 5: Dataset B Production Ingestion & Process Mining"):
+    with st.expander("Day 3: Designing the 'Entity-Centric Golden Thread' State Machine"):
         st.markdown(
-            """
-            - Ingested Dataset B production telemetry, recovering 279 executions (`segments.jsonl`).
-            - Mined operational friction: discovered `supplier_communication` (ROI: 25.30) and `expense_processing` (ROI: 16.75) represent 57.7% of all back-office volume.
+            r"""
+            **Objective:** Create the initial segmentation algorithm to split continuous event streams into discrete units of work without supervision.
+            
+            **Key Actions Taken:**
+            - Formulated the **'Golden Thread'** hypothesis: An enterprise process execution revolves around a single data entity (e.g., Invoice `INV-...`, PO `PO-...`, Employee ID) carried across apps via the clipboard.
+            - Implemented noise filtering in `src/segmentation/segmenter.py` (`filter_events`): filtered high-frequency mouse scrolls and raw keystrokes while preserving state transitions (`app_switch`, `clipboard_change`, `browser_navigation`, shortcuts `Ctrl+C`/`Ctrl+V`, submit clicks).
+            - Built `GoldenThreadSegmenter`:
+              - *The Anchor:* Captures `clipboard_change` payloads as active `Entity_Anchor`.
+              - *The Thread:* Tracks cross-application focus switches and portal navigation.
+              - *Boundary Detection:* Emits completions on portal hub returns (`/dashboard`, `/index`), conflicting entity copies, portal system shifts, or inactivity timeout (>60s).
+            
+            **Trials & Dead Ends:**
+            - **Attempted:** Pure idle-gap segmentation (splitting whenever user paused for $>15$ seconds).
+            - **Dead End Diagnosed:** Caused massive over-segmentation whenever an employee paused to read a complex contract or consult a colleague (Precision $<25\%$).
+            - **Resolution:** Grounded boundaries in portal hub returns and clipboard entity transitions, drastically stabilizing boundary precision.
             """
         )
 
-    with st.expander("Day 6: Step 3 Working Automation Prototype"):
+    with st.expander("Day 4: Baseline Evaluation, LLM Labeling & Semantic Segment Merging"):
         st.markdown(
-            """
-            - Built `SupplierWorkflowEngine` in `src/automation/supplier_automation.py`.
-            - Verified straight-through processing for standard requests and exception escalation routing.
-            - Automated test suite verified (36/36 tests passing).
+            r"""
+            **Objective:** Evaluate baseline segmentation on Dataset A, diagnose failure modes, and implement semantic post-processing to eliminate over-segmentation.
+            
+            **Key Actions Taken:**
+            - Baseline `GoldenThreadSegmenter` across 63 sessions in Dataset A resulted in **46.5% Boundary F1** and **9.2% Label Consistency**, generating 2,456 segments vs 2,009 ground truth (+447 spurious fragments).
+            - **Over-Segmentation Diagnosis:** Brief returns to portal before pasting additional data into Word/Excel caused premature cutoff.
+            - Built LLM labeling (`src/segmentation/llm_labeler.py`) with Japanese context prompt and built `merge_segments(max_gap_ms=30_000)` in `src/segmentation/segmenter.py` to merge adjacent segments within 30s sharing the same label without entity conflict.
+            - **Re-evaluation Results:**
+              - Total predicted segments dropped from 2,456 to **2,010** (within 1 segment of 2,009 true executions!).
+              - **Boundary F1 stabilized at 46.4%** (Precision: 45.4%, Recall: 48.1%) with **Segment IoU F1 at 55.5%**.
+              - **Label Consistency skyrocketed from 9.2% to 65.8%** (+56.6% gain; e.g., `onboarding_verification` at 91.3%, `bank_reconciliation` at 86.2%).
+            - Identified technical limits of heuristics: text-based heuristics cannot detect silent UI state changes (background table loading, modal popups, SPA shifts), leaving an unobserved **33.4% variance gap**.
+            
+            **Trials & Dead Ends:**
+            - **Attempted:** Naive regex matching on window titles without temporal smoothing.
+            - **Dead End Diagnosed:** Alt-Tab window title flickers caused label instability.
+            - **Resolution:** Integrated 30-second temporal semantic merging to consolidate multi-application switching loops.
             """
         )
 
-    with st.expander("Day 7: Final Report, Risk Matrix & Submission Polish"):
+    with st.expander("Day 5: Advanced Visual & Supervised ML R&D (Computer Vision POC & Two-Stage ML Breakthrough)"):
         st.markdown(
+            r"""
+            **Objective:** Investigate advanced visual and supervised machine learning approaches to bridge the 33.4% unobserved variance gap and shatter the 65.8% heuristic baseline ceiling.
+            
+            **Key Actions Taken:**
+            1. **Computer Vision Anomaly Engine R&D (Google Colab T4 GPU Pipeline):**
+               - **Execution Clarification:** I did not run the vision experiments locally with `src/experiments/vision_poc.py`. Instead, I engineered and executed the entire batch vision pipeline according to `experiments/Colab_vision_boundary.ipynb` on Google Colab using an Nvidia T4 GPU to batch-process all 34,563 1080p desktop screenshots from `dataset_a.zip`.
+               - Vectorized all frames with PyTorch `MobileNet_V3_Small` into 1,000-dimensional embeddings:
+                 - *Experiment 1:* Single-frame cosine similarity (<0.85) generated `experiments/vision_boundaries.jsonl` (`Vision_boundaries`, detecting 9,481 raw state changes).
+                 - *Experiment 2:* 4-frame dynamic rolling relational window (`drop_tolerance > 0.15`) generated `experiments/vision_boundaries_multiframe.jsonl` (`vsion_boundries_multiframe`, detecting 5,894 verified state changes).
+               - Converted both boundary files into ISO-8601 UTC session segments using `experiments/convert_vision_boundaries.py`:
+                 - Generated `experiments/evaluated_vision_boundaries.jsonl` (`evaluated_vision_boundaries`, also saved as `evaluated_segments_single.jsonl`).
+                 - Generated `experiments/evaluated_vision_boundaries_multiframe.jsonl` (`evaluated_vision_boundaries_multiframe`, also saved as `evaluated_segments_multiframe.jsonl`).
+               - Evaluated against Dataset A ground truth (`scripts/evaluate_dataset_a.py`): eliminated 3,587 false-positive jitter cuts (**-38.1% reduction**) and doubled **Segment IoU F1 from 7.3% to 15.7%**!
+               - Unified the complete pipeline logic into `src/experiments/vision_poc.py` as an offline reference implementation and CLI.
+            2. **Two-Stage Supervised Machine Learning Pipeline Breakthrough (`src/segmentation/ml_segmenter.py`):**
+               - *Stage 1 (Boundary Classifier):* Trained `HistGradientBoostingClassifier` on 162,650 Dataset A event samples across 18 tabular features with 12s adaptive refractory peak suppression (**ROC-AUC: 0.9274**).
+               - *Stage 2 (Semantic Classifier):* Trained `TF-IDF + LogisticRegression` conditioned on portal ports (`:5122-5124`), route hashes, window titles, and OCR text (**95.1% accuracy, 0.952 Macro F1**).
+               - *Dataset A Ground Truth Breakthrough:*
+                 - **Boundary F1:** Jumped from **46.4% $\to$ 81.4% (+35.0% absolute lift)** (Precision: 79.7%, Recall: 83.9%).
+                 - **Segment IoU F1 ($\ge 0.5$):** Jumped from **55.5% $\to$ 77.3% (+21.8% absolute lift)**.
+                 - **Label Consistency Purity:** Jumped from **65.8% $\to$ 93.9% (+28.1% absolute lift)**.
+                 - **Volume Fidelity:** **1,989 segments** vs 2,009 ground truth (99.0% volume fidelity).
+            3. **Strategic FDE Decision & Day 5 Freeze:**
+               - Recognized that Dataset A and Dataset B feature entirely different operators (`Marcos`, `yuvraj` vs `CHAITANYA0BCF`, `NEELA9BAF`), browsers (Chrome vs Edge), and port signatures (`5122-5124` vs `5132-5134`).
+               - A complex supervised model trained on Dataset A risks **overfitting to individual operator keystroke cadences**.
+               - Declared segmentation tuning complete and froze the primary deliverable (`segments.jsonl`) on the domain-invariant v1 heuristic state machine, ensuring robust, non-overfitted deliverables while preserving the ML engine (`src/segmentation/ml_segmenter.py`) for in-domain deployment.
+            
+            **Trials & Dead Ends:**
+            - **Attempted (Vision PoC):** Naive single-frame cosine similarity (<0.85).
+            - **Dead End Diagnosed:** Micro-scrolls, cursor blinks, and hover tooltips triggered 9,481 spurious cuts (12.5% precision).
+            - **Resolution:** Developed 4-frame relational window comparing transition similarity to surrounding plateau stability, filtering out 3,587 false-positive cuts.
             """
-            - Authored executive proposal (`final_report.md`) and candidate diary (`work_log.md`).
-            - Built automated verification harness and project documentation.
+        )
+
+    with st.expander("Day 6: Production Ingestion (Dataset B), Process Mining & Friction Discovery"):
+        st.markdown(
+            r"""
+            **Objective:** Ingest Dataset B production operational logs (15 sessions across 4 staff workstations), generate the required `segments.jsonl` deliverable, and quantify operational bottlenecks to prioritize automation candidates.
+            
+            **Key Actions Taken:**
+            - Extended pipeline for Dataset B: supported `Microsoft Edge (Profile 1)`, portal ports `5132` (HR), `5133` (Finance), `5134` (Operations), and production document templates.
+            - Generated primary deliverable `segments.jsonl` (`scripts/run_segmentation.py`): recovered 279 business process segments across all 15 sessions (100% session coverage), mean duration 35.8s (mirroring Dataset A's 37.1s).
+            - Engineered `src/analytics/process_miner.py`:
+              $$\text{Friction} = \text{Average App Switches} + \text{Average Clipboard Transitions}$$
+              $$\text{ROI Score} = \frac{\text{Volume} \times \text{Friction}}{\text{Average Duration}}$$
+            - **Enterprise Prioritization Scorecard:**
+              - **#1 `supplier_communication`:** 100 executions (35.8% volume), 61.9 active min, 9.39 friction $\to$ **ROI Score: 25.30**.
+              - **#2 `expense_processing`:** 61 executions (21.9% volume), 35.0 active min, 9.44 friction $\to$ **ROI Score: 16.75**.
+              - **#3 `onboarding_verification`:** 21 executions, 11.8 active min, 9.10 friction $\to$ **ROI Score: 5.67**.
+              - **#4 `leave_application_processing`:** 26 executions, 18.0 active min, 8.73 friction $\to$ **ROI Score: 5.45**.
+              - **#5 `inventory_adjustment`:** 25 executions, 15.8 active min, 8.12 friction $\to$ **ROI Score: 5.34**.
+            - **Key Discovery:** **57.7% of all enterprise back-office volume** is concentrated in just two workflows (`supplier_communication` + `expense_processing`), establishing them as high-impact automation targets.
+            - Isolated operational variants: routine adjustments ($\le 25\%$ qty, $\le 5$ days delivery) and expense claims ($\le \text{¥}10,000$/head entertainment, $\le \text{¥}30,000$ transit) vs contractual/tax escalations.
+            
+            **Trials & Dead Ends:**
+            - **Attempted:** Prioritizing automation candidates based solely on raw execution duration.
+            - **Dead End Diagnosed:** Favored complex, infrequent manual analysis tasks (like `budget_variance_analysis`, 48.2s avg, only 4 runs), which have low standardization and poor automation ROI.
+            - **Resolution:** Adopted multi-factor ROI formula weighting volume density and friction against duration, elevating high-volume administrative bottlenecks.
+            """
+        )
+
+    with st.expander("Day 7: Step 3 Working Automation Prototype, Risk Analysis, Final Verification & Delivery"):
+        st.markdown(
+            r"""
+            **Objective:** Design, build, and validate a functioning production automation prototype for `supplier_communication`; extend architecture to `expense_processing`; formulate implementation risk matrix; verify all deliverables.
+            
+            **Key Actions Taken:**
+            1. **Built Step 3 Primary Prototype (`src/automation/supplier_automation.py`):**
+               - Engineered `SupplierWorkflowEngine` as a stateless, deterministic policy microservice.
+               - Automatic straight-through approval (`AUTO_APPROVED`) for standard adjustments ($\le 25\%$ qty, $\le 5$ days delivery, $\le 5\%$ price).
+               - Formats standardized enterprise communication records ("Quantity Change Request", "Automated Processing Completed").
+               - Halts execution and flags `ESCALATED_TO_MANAGER` for contractual variance breaches.
+               - Defined Express / Node.js REST API contract (`POST /api/v1/supplier-requests/process`) for portal integration (ports `5132-5134`).
+            2. **Multi-Process Architecture Extension (`src/automation/expense_automation.py`):**
+               - Extended engine to Rank #2 bottleneck `expense_processing` (`ExpenseWorkflowEngine`), capturing 57.7% combined volume.
+               - Enforces Japanese tax compliance: validates corporate entertainment dining ($\le \text{¥}10,000$/head), transit claims ($\le \text{¥}30,000$), and strict receipt audit gates.
+            3. **Automated Test Suite & Verification:**
+               - Developed `tests/test_automation.py`, `tests/test_expense_automation.py`, and `tests/test_ml_segmenter.py`.
+               - Verified **46 / 46 Pytest tests passing** covering auto-approvals, limit breaches, exception handling, and batch executions.
+            4. **Empirical Risk Analysis & Residual Work Formulation:**
+               - Constructed 6-category Risk Matrix with concrete mitigations grounded in telemetry: Unicode/Shift_JIS normalization, idempotent transaction keys, and a 14-day staged stabilization phase in 'Shadow Recommendation Mode'.
+               - Defined high-value residual human work (exception sign-offs, master vendor contract review).
+            5. **Authored Comprehensive Final Report (`final_report.md`) & Diary (`work_log.md`):**
+               - Detailed 8-section report with 3-tier scorecard, Step 1 technical evolution, Step 2 prioritization, Step 3 prototype design, residual work, risk matrix, 7-day budget rationale, and 90-day roadmap.
+            6. **Final Packaging & Deliverable Validation:**
+               - Confirmed `segments.jsonl` (279 segments, 15 sessions), prototype endpoints, and 46 automated tests pass cleanly.
+            
+            **Trials & Dead Ends:**
+            - **Attempted:** Simulating human UI clicks via browser automation scripts.
+            - **Dead End Diagnosed:** Brittle DOM selectors and modal animations caused intermittent test failures.
+            - **Resolution:** Built deterministic Python backend engine exposed via clean REST endpoints, achieving $<50$ms execution speed and 100% test reliability.
             """
         )
 
     st.divider()
     st.subheader("Generative AI Disclosure")
-    st.info(
-        "Generative AI was used as an intelligent domain accelerator for translating Japanese portal placeholders "
-        "and UI window titles, as well as rapid drafting of unit test fixture skeletons. In accordance with enterprise "
-        "standards, all production business policy rules, segmentation state machines, and automation decision gates remain "
-        "100% deterministic and mathematically validated."
+    st.markdown(
+        """
+        In strict accordance with the engagement guidelines, Generative AI was used responsibly with full transparency:
+        
+        - **Architectural Brainstorming:** LLMs were used during Day 2 and Day 3 to brainstorm heuristic edge cases for human desktop multitasking (e.g., handling rapid alt-tabbing, clipboard masking).
+        - **Japanese Natural Language Understanding:** LLMs were utilized to translate and analyze Japanese UI window titles, form placeholders (such as verification comments, clearing reasons, and vendor requests), and document naming conventions into standardized 2–3 word English business process categories.
+        - **Boilerplate & Test Generation:** Generative AI assisted in rapid drafting of unit test fixtures (`pytest`) and data-structure serialization routines, followed by 100% manual code review, refactoring, and deterministic verification against the Dataset A ground truth harness.
+        - **Production Guardrails:** No production automation decisions rely on unconstrained or unverified LLM generation; all business policy rules, segmentation state machines, and automation decision gates remain **100% deterministic and mathematically validated**.
+        """
     )
+
+    st.divider()
+    with st.expander("📄 View Complete Unabridged work_log.md Document"):
+        log_file = ROOT / "work_log.md"
+        if log_file.exists():
+            st.markdown(log_file.read_text(encoding="utf-8"))
+        else:
+            st.error("work_log.md not found at repository root.")

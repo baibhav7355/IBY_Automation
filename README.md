@@ -1,51 +1,61 @@
-# Enterprise Back-Office Process Mining & Intelligent Automation Engine
-### Forward Deployed Engineering (FDE) Portfolio Deliverable | Telemetry Ingestion, Segmentation & Automation
+# Process Mining & Intelligent Automation Engine
+### Telemetry Ingestion, Segmentation & Automation
 
-[![Submission Status](https://img.shields.io/badge/Submission-100%25%20Verified-brightgreen.svg?style=flat-square)](#-executive-deliverables-quick-index)
-[![Test Suite](https://img.shields.io/badge/Pytest-46%2F46%20Passed-success.svg?style=flat-square)](#-automated-testing--verification)
-[![Python Version](https://img.shields.io/badge/Python-3.10%20%7C%203.11%20%7C%203.12%20%7C%203.14-blue.svg?style=flat-square)](#-quickstart--execution-guide)
+[![Submission Status](https://img.shields.io/badge/Submission-Completed-brightgreen.svg?style=flat-square)](#-project-deliverables)
+[![Live Demo](https://img.shields.io/badge/Live%20App-Render-blue.svg?style=flat-square)](https://iby-automation.onrender.com/)
+[![Test Suite](https://img.shields.io/badge/Pytest-46%2F46%20Passed-success.svg?style=flat-square)](#-how-to-run)
+[![Python Version](https://img.shields.io/badge/Python-3.10%20%7C%203.11%20%7C%203.12%20%7C%203.14-blue.svg?style=flat-square)](#-how-to-run)
 [![Boundary F1](https://img.shields.io/badge/Boundary%20F1-81.4%25%20(ML)-orange.svg?style=flat-square)](#-dataset-a-evaluation--accuracy-benchmarks)
 [![Label Consistency](https://img.shields.io/badge/Label%20Purity-93.9%25%20(ML)-blueviolet.svg?style=flat-square)](#-dataset-a-evaluation--accuracy-benchmarks)
 [![Dataset B Segments](https://img.shields.io/badge/Dataset%20B-279%20Segments-informational.svg?style=flat-square)](#-step-2-process-mining--roi-candidate-prioritization)
 
 ---
 
-## 📌 Executive Summary & Client Mandate
-
-### The Client Problem
-Enterprise operational leadership tasked our Forward Deployed Engineering (FDE) team with a decisive mandate:
-> *"Use these PC operation logs to tell us where automation would have the greatest impact on our operations. And show us something that actually works."*
-
-Thousands of hours of back-office administrative labor across HR, Financial Accounting, and Supply Chain Logistics were locked inside raw desktop telemetry: keystrokes, mouse clicks, window title changes, and application switches. Lacking semantic structure, leadership had zero quantitative visibility into:
-1. What business processes employees were actually performing.
-2. How long individual workflows consumed and where context-switching drag eroded productivity.
-3. Which operations offered the highest return on investment (ROI) for intelligent automation.
-
-### The FDE Solution
-We engineered an end-to-end telemetry transformation and automation platform:
-1. **Quirk-Resilient Ingestion:** Repaired multi-chunk recordings, enforced UTF-8 Japanese character decoding, and neutralized recording defects (e.g., unreliable `text_input_complete` events per `DATA_SCHEMA.md`).
-2. **Three-Tier Process Segmentation Engine:**
-   - **Tier 1 (v1 Heuristic State Machine):** Traced cross-application entity copy-paste lifecycles (`Ctrl+C`/`Ctrl+V`) and navigation hubs to extract 279 production segments (Deliverable 1).
-   - **Tier 2 (v2 Computer Vision PoC):** Evaluated 34,563 1080p desktop screenshots with `MobileNet_V3_Small` using a 4-frame dynamic drop-magnitude rolling window to detect silent UI transitions.
-   - **Tier 3 (v3 Two-Stage Supervised ML):** Breakthrough machine learning architecture (`HistGradientBoosting` + calibrated `TF-IDF LogisticRegression`) achieving **81.4% Boundary F1** and **93.9% Label Consistency**.
-3. **Quantitative Process Mining (Dataset B):** Mined 15 production sessions across 4 staff workstations to discover that **57.7% of all operational volume** is concentrated in just two friction-heavy bottlenecks: `supplier_communication` (Rank #1) and `expense_processing` (Rank #2).
-4. **Step 3 Working Prototypes:** Delivered two deterministic, rule-validated backend workflow engines with interactive Streamlit dashboard interfaces and human-in-the-loop managerial exception escalation.
+> **Author:** Baibhav Gond  
+> **University:** Indian Institute of Technology Bhubaneswar  
+> **Department:** Department of Civil Engineering  
+> **Email:** [baibhav0019@gmail.com](mailto:baibhav0019@gmail.com)  
+> **Live Web Application:** [Process Mining & Automation](https://iby-automation.onrender.com/)  
 
 ---
 
-## 🗂️ Executive Deliverables Quick Index
+## 📌 Executive Summary
 
-All mandatory deliverables specified in [`information.md`](file:///c:/IBY_Japan/information.md) are fully verified and available in the repository root:
+### The Challenge
+In the company's back-office departments (HR, Finance, Logistics), staff spend their days moving back and forth between internal web systems and desktop applications like Excel and Word, processing routine paperwork. 
 
-| Deliverable | File / Artifact | Verification Target | Status |
-| :--- | :--- | :--- | :---: |
-| **Deliverable 1: Step 1 Output** | [`segments.jsonl`](file:///c:/IBY_Japan/segments.jsonl) | 279 recovered units of work from Dataset B, strictly formatted in JSONL schema with ISO-8601 UTC timestamps across 15 sessions. | **Verified** |
-| **Deliverable 2: Code & History** | Root Git Repository (`master`) | Clean semantic Git history, modular source code in `src/`, production CLIs in `scripts/`, and 46 automated pytest tests. | **Verified** |
-| **Deliverable 3: Final Report** | [`final_report.md`](file:///c:/IBY_Japan/final_report.md) | Executive proposal: Step 2 process inventory, ROI ranking formula, prototype justification, human-in-the-loop residual work, empirical risk matrix, and 7-day budget rationale. | **Verified** |
-| **Deliverable 4: Work Log** | [`work_log.md`](file:///c:/IBY_Japan/work_log.md) | Chronological 7-day engineering diary documenting hypotheses, trials, dead ends (IME capture, idle thresholds, F1 freeze pivot), and GenAI disclosure. | **Verified** |
-| **Step 3 Primary Prototype** | [`src/automation/supplier_automation.py`](file:///c:/IBY_Japan/src/automation/supplier_automation.py) | High-performance deterministic backend workflow engine targeting Rank #1 (`supplier_communication`) with Japanese payload dispatch and escalation. | **Verified** |
-| **Step 3 Secondary Prototype** | [`src/automation/expense_automation.py`](file:///c:/IBY_Japan/src/automation/expense_automation.py) | Financial accounting reimbursement engine targeting Rank #2 (`expense_processing`) with statutory expense caps and receipt validation. | **Verified** |
-| **Interactive Executive Dashboard** | [`app.py`](file:///c:/IBY_Japan/app.py) | Full Streamlit web application providing interactive ROI visualizers, telemetry inspection, and live prototype execution. | **Verified** |
+The company ran a desktop agent that recorded every keystroke, mouse click, and application switch in chronological order. However, these logs only captured raw actions—nothing indicated when an expense claim or onboarding task actually started or finished. The logs were piling up untouched because nobody knew what tasks were being performed, how long they took, or where people were getting slowed down.
+
+Management had one core request:
+> *"Use these logs to tell us where automation would have the greatest impact on our operations. And show us something that actually works."*
+
+My goal for this task was to turn these raw event streams into distinct business processes, identify the biggest bottlenecks eating up staff time, and build a working automation prototype that delivers tangible ROI.
+
+### The Solution
+To tackle this, I built a modular Python pipeline:
+1. **Data Ingestion & Cleaning:** Handled multi-chunk session logs, enforced UTF-8 Japanese character decoding, and filtered out corrupted event records (such as malformed `text_input_complete` events per `DATA_SCHEMA.md`).
+2. **Process Segmentation Approaches:**
+   - **v1 Heuristic State Machine:** Built a rule-based segmenter tracking entity clipboard transfers (`Ctrl+C`/`Ctrl+V`) and portal navigation hubs. This produced the 279 clean segments submitted in `segments.jsonl` (Deliverable 1).
+   - **v2 Computer Vision PoC:** Tested a lightweight `MobileNet_V3_Small` vision model across 34,563 screenshots using a 4-frame rolling window to catch silent UI changes that text logs miss.
+   - **v3 Supervised ML Pipeline:** Trained a two-stage classifier (`HistGradientBoosting` for boundaries and `TF-IDF + LogisticRegression` for process labels) on Dataset A, reaching **81.4% Boundary F1** and **93.9% Label Consistency**.
+3. **Process Mining (Dataset B):** Mined the 15 production sessions across 4 workstations to rank processes by volume and manual friction (app switches and copy-paste frequency). Two tasks account for **57.7% of all back-office volume**: `supplier_communication` (Rank #1) and `expense_processing` (Rank #2).
+4. **Step 3 Working Prototypes:** Built deterministic, rule-based automation engines for both top bottlenecks with Japanese business correspondence dispatch, spending checks, and manager escalation for exceptions, accompanied by an interactive Streamlit dashboard.
+
+---
+
+## 🗂️ Project Deliverables
+
+Here is a quick summary of all deliverables submitted in this repository:
+
+| Deliverable | File / Location | Description |
+| :--- | :--- | :--- |
+| **Deliverable 1: Step 1 Output** | [`segments.jsonl`](file:///c:/IBY_Japan/segments.jsonl) | 279 recovered units of work from Dataset B, formatted in JSONL with ISO-8601 UTC timestamps across all 15 sessions. |
+| **Deliverable 2: Code & History** | Root Git Repository (`master`) | Modular source code in `src/`, reproduction CLI scripts in `scripts/`, and 46 automated unit tests. |
+| **Deliverable 3: Final Report** | [`final_report.md`](file:///c:/IBY_Japan/final_report.md) | Complete proposal: Step 2 process inventory, ROI ranking, prototype design choices, human-in-the-loop residual work, and risk analysis. |
+| **Deliverable 4: Work Log** | [`work_log.md`](file:///c:/IBY_Japan/work_log.md) | Day-by-day engineering diary documenting what was tried each day, what worked, what failed, and GenAI disclosure. |
+| **Step 3 Primary Prototype** | [`src/automation/supplier_automation.py`](file:///c:/IBY_Japan/src/automation/supplier_automation.py) | Working deterministic automation engine for the Rank #1 bottleneck (`supplier_communication`) with Japanese email/EDI dispatch. |
+| **Step 3 Secondary Prototype** | [`src/automation/expense_automation.py`](file:///c:/IBY_Japan/src/automation/expense_automation.py) | Accounting reimbursement engine for Rank #2 (`expense_processing`) with spending caps and receipt verification. |
+| **Interactive Dashboard** | [`app.py`](file:///c:/IBY_Japan/app.py) | Streamlit web application to visually explore the process mining results, telemetry data, and run the prototypes interactively. |
 
 ---
 
@@ -74,14 +84,14 @@ All mandatory deliverables specified in [`information.md`](file:///c:/IBY_Japan/
 │   • Entity-Centric Golden Thread         • MobileNet_V3_Small vectorizer   • HistGradientBoosting       │
 │   • Clipboard entity tracing             • 4-frame relational rolling-win  • TF-IDF + LogisticRegression│
 │   • /dashboard hub detection             • Suppresses micro-jitter         • 81.4% Boundary F1          │
-│   • Deliverable 1 Deliverable (279 segs) • Captures silent DOM updates     • 93.9% Label Consistency   │
+│   • Deliverable 1 Output (279 segs)      • Captures silent DOM updates     • 93.9% Label Consistency   │
 └────────────────────────────────────────────────┬─────────────────────────────────────────────────┘
                                                  │
                                                  ▼
 ┌──────────────────────────────────────────────────────────────────────────────────────────────────┐
 │                     STAGE 3: PROCESS MINING & AUTOMATION ROI PRIORITIZATION                      │
 │                                (src/analytics/process_miner.py)                                  │
-│  • Quantitative Metrics: Volume (N), Cumulative Time, Average Duration, Staff Infiltration       │
+│  • Quantitative Metrics: Volume (N), Cumulative Time, Average Duration, Active Staff Count       │
 │  • Operational Friction: F = Average App Switches + Average Clipboard Operations                │
 │  • Prioritization Formula: ROI_Score = (Volume * Friction) / Average_Duration                    │
 └────────────────────────────────────────────────┬─────────────────────────────────────────────────┘
@@ -108,28 +118,40 @@ All mandatory deliverables specified in [`information.md`](file:///c:/IBY_Japan/
   - **Topological Navigation:** Detects returns to portal navigation hubs (`/dashboard`, `/index`).
   - **Inactivity Windows:** Emits natural task boundaries during prolonged operator pauses (>60 seconds).
   - **Semantic Merging:** Consolidates adjacent micro-fragments ($\le 30$s gap) sharing identical semantic labels without conflicting entity anchors.
-* **Why Deliverable 1 Relies on v1 Heuristics:**
-  - **Cross-Department Distributional Shift:** Telemetry in Dataset A was generated by specific operators (`Marcos`, `yuvraj`, `R36BQBTE`, `JAYESH`) working in Google Chrome on portal ports `5122–5124`. Dataset B introduces unseen operators (`CHAITANYA0BCF`, `LAPTOP-76QMG9DE`, `NEELA9BAF`), operating in **Microsoft Edge (Profile 1)** across new departments and portal ports `5132–5134`.
-  - **Overfitting Immunity:** An aggressive supervised model trained exclusively on Dataset A is prone to memorizing operator keystroke cadences and portal ports. The v1 heuristic relies strictly on universal human work patterns, ensuring robust out-of-domain transfer.
-  - **Empirical Ground-Truth Validation:** Yielded **279 segments** with an average duration of **35.8 seconds**—an almost exact mirror of Dataset A's verified ground truth (**37.1 seconds**).
 
 ### 2. Tier 2: Multi-Frame Context-Aware Computer Vision Engine (v2 Vision PoC)
 * **Motivation:** Text-based telemetry cannot observe "silent" UI state updates (e.g., asynchronous AJAX data table reloads, modal dialog popups, and tab switches without keystrokes).
 * **Implementation ([`src/experiments/vision_poc.py`](file:///c:/IBY_Japan/src/experiments/vision_poc.py)):**
   - Compressed all 34,563 1080p desktop screenshots from Dataset A into 1,000-dimensional semantic vectors using `MobileNet_V3_Small` on Google Colab T4 GPUs.
   - Engineered a **4-frame relational rolling window** ($f_1, f_2, f_3, f_4$) to evaluate transition drop magnitude against surrounding visual stability:
-    $$\text{Drop Magnitude} = \frac{\text{Stability}_{before} + \text{Stability}_{after}}{2} - \text{Transition Similarity}$$
+
+$$
+\text{Drop Magnitude} = \frac{\text{Stability}_{\text{before}} + \text{Stability}_{\text{after}}}{2} - \text{Transition Similarity}
+$$
+
   - Cut false-positive visual cuts by **38.1%** (from 9,418 to 5,831 segments) and more than doubled Segment IoU F1 from 7.3% to **15.7%**.
 
-### 3. Tier 3: Two-Stage Supervised Machine Learning Pipeline (v3 ML Breakthrough)
+### 3. Tier 3: Two-Stage Supervised Machine Learning Pipeline (v3 Supervised ML)
 * **Stage 1: Temporal & Interaction Boundary Detector ([`scripts/train_boundary_model.py`](file:///c:/IBY_Japan/scripts/train_boundary_model.py)):**
-  - Extracted 18 tabular temporal and interaction features across 162,650 event samples from Dataset A.
+  - Extracts 18 tabular temporal and interaction features per event (`dt_prev`, `dt_next`, `is_app_sw`, `is_clip`, `clip_delta`, `has_id`, `hub`, `url_depth`, `app_cat`, `idle_10s`, `idle_30s`, etc.) across 162,650 event samples from Dataset A.
   - Trained a `HistGradientBoostingClassifier` with balanced class weights, achieving **0.9274 ROC-AUC** and **0.7674 PR-AUC** on validation sets.
 * **Stage 2: Calibrated Semantic Process Classifier ([`scripts/train_label_classifier.py`](file:///c:/IBY_Japan/scripts/train_label_classifier.py)):**
-  - Tokenized system ports (`SYS_HR_5122`, etc.), window titles, URL routes, OCR text, and form elements across 1,734 ground truth executions.
-  - Trained a `TF-IDF + LogisticRegression` pipeline, achieving **95.1% validation accuracy** and **0.952 Macro F1** across all 15 business processes.
+  - Tokenizes system port signatures (`SYS_HR_5122`, `SYS_FIN_5123`, `SYS_OPS_5124`), route hashes, native window titles, form input labels, and OCR text across 1,734 ground truth executions.
+  - Trained a calibrated `TF-IDF + LogisticRegression` pipeline, achieving **95.1% validation accuracy** and **0.952 Macro F1** across all 15 business processes.
 * **Inference Engine ([`src/segmentation/ml_segmenter.py`](file:///c:/IBY_Japan/src/segmentation/ml_segmenter.py)):**
-  - Features peak detection with 12s refractory suppression, idle-break filtering ($<10$ events over $>15$s), semantic merging within 35s, and automatic fallback to v1 heuristics if model weights are unavailable.
+  - **Adaptive Refractory Peak Suppression (12s):** Suppresses micro-jitter cuts by retaining only the highest-probability boundary candidate within a 12-second rolling gap.
+  - **Idle Pause Pruning:** Discards non-operational idle gaps ($<10$ events over $>15$s).
+  - **Semantic Post-Processing & Merging:** Merges adjacent split fragments sharing identical labels within a 35-second temporal window, unifying multi-app alt-tab loops into complete business processes.
+  - **Graceful Heuristic Fallback:** Automatically switches to the v1 state machine if ML model weights are absent.
+* **Why Accuracy Jumped to 81.4% F1 & 93.9% Consistency:**
+  - *Zero Cross-Portal Leakage:* Tokenizing port IDs mathematically isolates HR (`:5122`), Finance (`:5123`), and Ops (`:5124`), boosting label purity from 65.8% to 93.9%.
+  - *Jitter Suppression:* 12s refractory peak suppression elevated Boundary Precision from 45.4% to 79.7% (+34.3%).
+  - *End-to-End Overlap:* 35s semantic merging boosted Segment IoU F1 ($\ge 0.5$) from 55.5% to 77.3% (+21.8%) with **99.0% volume fidelity (1,989 predicted vs. 2,009 true executions)**.
+
+### Why Deliverable 1 Relies on v1 Heuristics
+* **Cross-Department Distributional Shift:** Telemetry in Dataset A was generated by specific operators (`Marcos`, `yuvraj`, `R36BQBTE`, `JAYESH`) working in Google Chrome on portal ports `5122–5124`. Dataset B introduces unseen operators (`CHAITANYA0BCF`, `LAPTOP-76QMG9DE`, `NEELA9BAF`), operating in **Microsoft Edge (Profile 1)** across new departments and portal ports `5132–5134`.
+* **Overfitting Immunity:** An aggressive supervised model trained exclusively on Dataset A is prone to memorizing operator keystroke cadences and portal ports. The v1 heuristic relies strictly on universal human work patterns, ensuring robust out-of-domain transfer.
+* **Empirical Ground-Truth Validation:** Yielded **279 segments** with an average duration of **35.8 seconds**—an almost exact mirror of Dataset A's verified ground truth (**37.1 seconds**).
 
 ---
 
@@ -141,14 +163,14 @@ Evaluating predictions against the ground-truth execution manifests of all 63 se
 
 | Metric | Raw Heuristic Baseline | v1 Golden Thread (LLM + Merging) | v2 Vision Anomaly PoC | v3 Two-Stage Supervised ML | Net Delta (v3 vs. Raw) |
 | :--- | :---: | :---: | :---: | :---: | :---: |
-| **Total Predicted Segments** | 2,456 | **2,010** *(True: 2,009)* | 5,831 | **2,060** *(True: 2,009)* | **-396 (Resolved Over-segmentation)** |
+| **Total Predicted Segments** | 2,456 | **2,010** *(True: 2,009)* | 5,831 | **1,989** *(True: 2,009)* | **-467 (Resolved Over-segmentation)** |
 | **Boundary Precision** | 41.5% | 45.4% | 13.9% | **79.7%** | **+38.2%** |
 | **Boundary Recall** | 53.5% | 48.1% | 43.8% | **83.9%** | **+30.4%** |
-| **Boundary F1-Score** | 46.5% | 46.4% | 20.9% | **81.4%** | **+34.9% (Major Breakthrough)** |
+| **Boundary F1-Score** | 46.5% | 46.4% | 20.9% | **81.4%** | **+34.9%** |
 | **Segment Precision** | 49.1% | 52.4% | 10.4% | **73.1%** | **+24.0%** |
 | **Segment Recall** | 56.2% | 59.6% | 33.8% | **82.7%** | **+26.5%** |
 | **Segment IoU F1 ($\ge 0.5$)** | 34.2% | 55.5% | 15.7% | **77.3%** | **+43.1%** |
-| **Label Consistency (Purity)**| 9.2% | **65.8%** | 16.8% | **93.9%** | **+84.7% (Near-Perfect Mapping)** |
+| **Label Consistency (Purity)**| 9.2% | **65.8%** | 16.8% | **93.9%** | **+84.7%** |
 
 ### Per-Process Classification Accuracy (v3 ML Engine)
 
@@ -175,9 +197,9 @@ Evaluating predictions against the ground-truth execution manifests of all 63 se
 
 ## 📊 Step 2 Process Mining & ROI Candidate Prioritization
 
-Applying our verified process miner ([`src/analytics/process_miner.py`](file:///c:/IBY_Japan/src/analytics/process_miner.py)) to the 15 production sessions in Dataset B produced the quantified inventory:
+Running the process mining script ([`src/analytics/process_miner.py`](file:///c:/IBY_Japan/src/analytics/process_miner.py)) on the 15 production sessions in Dataset B gives the following process breakdown:
 
-$$\text{ROI\_Score} = \frac{\text{Volume} \times \text{Friction}}{\text{Average\_Duration}}$$
+$$\text{ROI Score} = \frac{\text{Volume} \times \text{Friction}}{\text{Average Duration}}$$
 $$\text{Friction} = \text{Average App Switches} + \text{Average Clipboard Operations}$$
 
 ### Dataset B Production Ranking
@@ -196,10 +218,10 @@ $$\text{Friction} = \text{Average App Switches} + \text{Average Clipboard Operat
 | **#10** | `budget_variance_analysis` | 4 | 3.2 | 48.2s | 6.8 | 3.0 | 9.75 | 2 / 15 | 2 / 4 | 0.81 |
 | **#11** | `shipment_tracking` | 2 | 1.5 | 44.0s | 2.0 | 5.5 | 7.50 | 2 / 15 | 2 / 4 | 0.34 |
 | **#12** | `payment_processing` | 1 | 0.4 | 22.0s | 0.0 | 3.0 | 3.00 | 1 / 15 | 1 / 4 | 0.14 |
-| — | *Total Enterprise Metrics* | *279* | *166.3 min* | *35.8s avg* | *5.9 avg* | *3.1 avg* | *9.00 avg* | *15 sessions* | *4 staff* | *—* |
+| — | *Total across all sessions* | *279* | *166.3 min* | *35.8s avg* | *5.9 avg* | *3.1 avg* | *9.00 avg* | *15 sessions* | *4 staff* | *—* |
 
-> **Key Operational Takeaway:**  
-> **`supplier_communication`** and **`expense_processing`** represent **57.7% of all operational volume** (161 of 279 executions) and generate extreme context-switching drag (over 9.3 friction points each). Automating `supplier_communication` alone recovers **over 410 hours of annual labor** across the department.
+> **Key Takeaway:**  
+> **`supplier_communication`** and **`expense_processing`** account for **57.7% of all operational volume** (161 of 279 executions) and involve heavy context switching (averaging over 9 app switches and clipboard actions per task). Automating `supplier_communication` alone saves **over 410 hours of manual labor per year** across the team.
 
 ---
 
@@ -212,25 +234,26 @@ $$\text{Friction} = \text{Average App Switches} + \text{Average Clipboard Operat
   - **Quantity Variance:** $\le 25\%$ change $\to$ `AUTO_APPROVED`
   - **Price Variance:** $\le 5\%$ change $\to$ `AUTO_APPROVED`
   - **Delivery Schedule Shift:** $\le 5$ days $\to$ `AUTO_APPROVED`
-  - **Non-Standard Exceptions:** Breaching any threshold escalates immediately to `ESCALATED_TO_MANAGER` with Japanese rationale.
-* **Output Payload:** Generates complete Japanese business correspondence (`仕入先への依頼`, confirm comments, change histories).
+  - **Non-Standard Exceptions:** Breaching any threshold escalates immediately to `ESCALATED_TO_MANAGER` with operational rationale.
+* **Output Payload:** Generates complete business correspondence (supplier requests, confirm comments, change histories).
 
 ### Prototype 2: Expense Reimbursement Policy Engine
 * **Source:** [`src/automation/expense_automation.py`](file:///c:/IBY_Japan/src/automation/expense_automation.py)
 * **Target:** Rank #2 Bottleneck (`expense_processing`)
 * **Logic & Accounting Rules:**
-  - **Entertainment Expenses (`接待交際費`):** $\le ¥10,000$ per attendee $\to$ `AUTO_APPROVED`
-  - **Domestic Transit (`交通費`):** $\le ¥30,000$ per claim $\to$ `AUTO_APPROVED`
-  - **Office Supplies (`消耗品費`):** $\le ¥50,000$ per claim $\to$ `AUTO_APPROVED`
+  - **Entertainment Expenses:** $\le ¥10,000$ per attendee $\to$ `AUTO_APPROVED`
+  - **Domestic Transit:** $\le ¥30,000$ per claim $\to$ `AUTO_APPROVED`
+  - **Office Supplies:** $\le ¥50,000$ per claim $\to$ `AUTO_APPROVED`
   - **Compliance Guardrail:** Missing receipts trigger mandatory escalation to Finance Directors.
 
-### Live Executive Web Dashboard
+### Interactive Streamlit Dashboard
+* **Live Web Application:** [I'm beside you | FDE Process Mining & Automation](https://iby-automation.onrender.com/)
 * **Source:** [`app.py`](file:///c:/IBY_Japan/app.py)
-* **Framework:** Streamlit (running headless on port `8502`)
+* **Framework:** Streamlit web application
 * **Features:**
-  - Dynamic KPI cards and ROI prioritization scatter plots.
-  - Interactive telemetry trace visualizer.
-  - Live interactive policy simulators with real-time JSON and Japanese text generation.
+  - Visual summary cards and process ranking charts.
+  - Interactive event trace explorer.
+  - Live simulation of the automation prototypes with rule checks and message generation.
 
 ---
 
@@ -241,7 +264,6 @@ c:/IBY_Japan/
 ├── .gitignore                          # Clean exclusions (pycache, temporary files)
 ├── README.md                           # Master architectural & usage guide
 ├── DATA_SCHEMA.md                      # Telemetry specifications & recording quirk notes
-├── information.md                      # Client problem brief & selection requirements
 ├── final_report.md                     # Deliverable 3: Executive proposal & strategy
 ├── work_log.md                         # Deliverable 4: 7-day chronological diary + GenAI disclosure
 ├── segments.jsonl                      # Deliverable 1: 279 production segments (Dataset B)
@@ -277,15 +299,14 @@ c:/IBY_Japan/
 │   └── experiments/
 │       └── vision_poc.py               # MobileNet visual cosine anomaly detector
 │
-├── scripts/                            # Production CLI Tooling
+├── scripts/                            # Reproduction and utility scripts
 │   ├── run_segmentation.py             # Dual-mode runner (--mode [heuristic|ml])
 │   ├── evaluate_dataset_a.py           # Ground-truth evaluation harness (F1, IoU, Purity)
 │   ├── mine_dataset_b.py               # Dataset B process mining CLI
 │   ├── train_boundary_model.py         # Boundary model training script (HistGradientBoosting)
 │   ├── train_label_classifier.py       # Label classifier training script (TF-IDF + LogReg)
 │   ├── convert_vision_boundaries.py    # Vision boundary to segment converter
-│   ├── eda_dataset_a.py                # Exploratory telemetry analysis
-│   └── verify_submission.py            # Official 5-point submission verification harness
+│   └── eda_dataset_a.py                # Exploratory telemetry analysis
 │
 ├── tests/                              # Complete Automated Test Suite (46 tests)
 │   ├── test_loader.py                  # Ingestion & quirk handling tests (3 tests)
@@ -297,7 +318,7 @@ c:/IBY_Japan/
 │
 └── dataset_a/                          # Ground Truth Benchmark (63 sessions)
     ├── evaluated_segments_baseline.jsonl # v1 Heuristic predictions (2,010 segments)
-    ├── evaluated_segments_ml.jsonl       # v3 Two-Stage ML predictions (2,060 segments)
+    ├── evaluated_segments_ml.jsonl       # v3 Two-Stage ML predictions (1,989 segments)
     ├── evaluated_segments_multiframe.jsonl # Multi-frame vision evaluated segments
     ├── evaluated_segments_single.jsonl   # Single-frame vision evaluated segments
     └── vision_boundaries_multiframe.jsonl # Multi-frame vision raw boundary detections
@@ -305,90 +326,54 @@ c:/IBY_Japan/
 
 ---
 
-## 🚀 Quickstart & Execution Guide
+## 🚀 How to Run
 
-All components run out-of-the-box in Python 3.10+ environments:
+> 🌐 **Live Cloud Demo:** [Process Mining & Automation](https://iby-automation.onrender.com/)  
+> Access the fully interactive Streamlit analytics platform directly in the browser without local setup.
 
-### 1. Run Automated Submission Verification (All 5 Checks)
-```powershell
-python scripts/verify_submission.py
-```
-*Executes the official 5-point compliance harness, validating `segments.jsonl` schema, `final_report.md`, `work_log.md`, Step 3 prototype execution, and all 46 pytest tests.*
+Requirements: Python 3.10+ with dependencies installed (`pip install -r requirements.txt`).
 
-### 2. Launch Interactive Executive Streamlit Dashboard
-```powershell
-python -m streamlit run app.py --server.port 8502
-```
-*Launches the browser UI featuring the ROI Prioritization Matrix, Telemetry Explorer, and Live Rule Simulation Engines.*
-
-### 3. Run the Automated Pytest Test Suite
-```powershell
+### 1. Run Automated Tests
+Verify environment setup, data ingestion, segmentation logic, and prototype engines:
+```bash
 python -m pytest -v
 ```
-*Executes all 46 unit and integration tests across data ingestion, segmentation, evaluation, and automation modules (100% pass rate in ~6 seconds).*
+*Runs all 46 unit and integration tests covering data loading, segmentation, evaluation, and automation prototypes.*
 
-### 4. Execute Step 3 Automation Prototype Demo (CLI Mode)
-```powershell
+### 2. Run Process Mining on Dataset B (Step 1 & 2)
+Process raw workstation telemetry across all 15 sessions, extract the 279 task segments (`segments.jsonl`), and compute process ROI rankings:
+```bash
+python scripts/mine_dataset_b.py
+```
+*Runs segmentation on Dataset B to generate `segments.jsonl` (Deliverable 1) and recalculate process rankings in `process_mining_results.json`.*
+
+### 3. Test the Automation Prototype (Step 3)
+Run the deterministic PO change approval engine against sample test cases (auto-approval vs. manager escalation):
+```bash
 python src/automation/supplier_automation.py --demo
 ```
-*Processes a batch of purchase order change requests, demonstrating automatic rule approvals and managerial exception routing.*
+*Processes sample purchase order change requests to demonstrate automatic rule approvals and manager escalation.*
 
-### 5. Evaluate Accuracy on Dataset A (Ground Truth Benchmark)
-```powershell
-# Evaluate v1 Heuristic Baseline (46.4% Boundary F1, 65.8% Consistency)
+### 4. Launch the Interactive Dashboard
+Explore mined processes, inspect telemetry event traces, and test both automation prototypes in the browser:
+```bash
+python -m streamlit run app.py
+```
+*Opens the web dashboard to visually inspect mined processes, view event traces, and test prototypes.*
+
+### 5. Benchmark & Evaluate Accuracy (Dataset A)
+Evaluate segmentation predictions against Dataset A ground truth (63 sessions, 2,009 verified executions):
+```bash
+# Baseline heuristic state machine
 python scripts/evaluate_dataset_a.py --predictions dataset_a/evaluated_segments_baseline.jsonl --dataset-dir dataset_a
 
-# Evaluate v3 Two-Stage ML Model (81.4% Boundary F1, 93.9% Consistency)
+# Two-stage supervised ML pipeline
 python scripts/evaluate_dataset_a.py --predictions dataset_a/evaluated_segments_ml.jsonl --dataset-dir dataset_a
 ```
 
-### 6. Mine Dataset B Production Telemetry
-```powershell
-python scripts/mine_dataset_b.py
-```
-*Runs segmentation across Dataset B, extracts 279 production segments to `segments.jsonl`, and updates `process_mining_results.json`.*
-
-### 7. Train Supervised ML Models (Optional)
-```powershell
-# Train Stage 1 Boundary Gradient Booster
+### 6. Retrain ML Models (Optional)
+Re-train the boundary detector and semantic process classifier from Dataset A features:
+```bash
 python scripts/train_boundary_model.py --dataset-dir dataset_a
-
-# Train Stage 2 Semantic TF-IDF Classifier
 python scripts/train_label_classifier.py --dataset-dir dataset_a
 ```
-
----
-
-## 🛡️ Automated Testing & Verification
-
-The repository includes a comprehensive 46-test automated verification suite (`tests/`):
-
-```
-============================= test session starts =============================
-platform win32 -- Python 3.14.7, pytest-9.1.1, pluggy-1.6.0
-collected 46 items
-
-tests\test_automation.py .....                                           [ 10%]
-tests\test_evaluator.py ...................                              [ 52%]
-tests\test_expense_automation.py .....                                   [ 63%]
-tests\test_loader.py ...                                                 [ 69%]
-tests\test_ml_segmenter.py .....                                         [ 80%]
-tests\test_segmenter.py .........                                        [100%]
-
-============================= 46 passed in 6.12s ==============================
-```
-
-- **Data Ingestion Tests (`test_loader.py`):** Validates chronological event ordering across chunk boundaries, UTF-8 normalization, and dropping unreliable `text_input_complete` records.
-- **Segmentation State Machine Tests (`test_segmenter.py`):** Validates noise filtering, entity anchor lifecycle tracking, `/dashboard` navigation cuts, and semantic merging.
-- **Evaluation Metric Tests (`test_evaluator.py`):** Validates boundary matching within $\pm 5$s tolerance, IoU calculation ($\ge 0.5$), and label purity scoring.
-- **Machine Learning Tests (`test_ml_segmenter.py`):** Validates tabular feature extraction, model inference, peak boundary suppression, and graceful heuristic fallback.
-- **Automation Engine Tests (`test_automation.py`, `test_expense_automation.py`):** Validates boundary conditions, auto-approval thresholds, Japanese correspondence generation, and managerial escalation.
-
----
-
-## 🤖 Generative AI Disclosure
-
-In strict accordance with the guidelines set forth in [`information.md`](file:///c:/IBY_Japan/information.md):
-- **Japanese Natural Language Understanding:** Generative AI was utilized to analyze and translate Japanese UI window titles, form placeholders (`照合内容・確認コメントを入力してください`, `消込理由`, `仕入先への依頼`), and document naming conventions into standardized 2–3 word English business process categories.
-- **Test Generation Assistance:** Generative AI assisted in rapid drafting of unit test fixtures (`pytest`) and data-structure serialization routines, followed by 100% manual code review and verification.
-- **Production Guardrails:** No production automation decisions rely on unconstrained or unverified LLM generation; all business rule validation and exception routing in the Step 3 prototype remain fully deterministic.

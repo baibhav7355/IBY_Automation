@@ -14,7 +14,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from src.pipeline.loader import load_session_events
 from src.segmentation.segmenter import GoldenThreadSegmenter
-from src.analytics.process_miner import mine_process_metrics, calculate_roi_prioritization
+from src.analytics.process_miner import analyze_dataset_b, print_markdown_table
 
 
 def main() -> None:
@@ -29,17 +29,14 @@ def main() -> None:
     print(f"Mining {len(session_dirs)} production sessions from {dataset_dir}...")
 
     all_segments = []
-    session_events_map = {}
 
     t0 = time.perf_counter()
     with open(output_path, "w", encoding="utf-8") as f:
         for idx, ses_dir in enumerate(session_dirs, 1):
             events = load_session_events(ses_dir, text_input_policy="drop")
-            session_events_map[ses_dir.name] = events
-
             segger = GoldenThreadSegmenter(session_id=ses_dir.name)
             segs = list(segger.segment(events))
-            all_segments.extend([s.__dict__ for s in segs])
+            all_segments.extend(segs)
 
             for s in segs:
                 f.write(json.dumps(s.to_deliverable(), ensure_ascii=False) + "\n")
@@ -50,26 +47,8 @@ def main() -> None:
     print(f"\nGenerated {len(all_segments)} segments written to {output_path.resolve()} ({elapsed:.2f}s)")
 
     # Run Process Mining Analytics
-    metrics = mine_process_metrics(all_segments, session_events_map)
-    rankings = calculate_roi_prioritization(metrics)
-
-    print("\n" + "=" * 100)
-    print("  DATASET B PROCESS MINING & AUTOMATION ROI PRIORITIZATION SCORECARD")
-    print("=" * 100)
-    header = (
-        f"{'Rank':<5} {'Process':<30} {'Volume':<8} {'Avg Dur(s)':<12} "
-        f"{'Total(min)':<12} {'AppSwitches':<13} {'Staff':<7} {'Feasibility':<12} {'ROI Score':<10}"
-    )
-    print(header)
-    print("-" * 100)
-
-    for rank, r in enumerate(rankings, 1):
-        print(
-            f"#{rank:<4} {r['process']:<30} {r['volume']:<8} {r['avg_duration_s']:<12.1f} "
-            f"{r['total_time_min']:<12.1f} {r['app_switches_per_exec']:<13.1f} "
-            f"{r['staff_count']:<7} {r['feasibility']:<12.2f} {r['roi_score']:<10.1f}"
-        )
-    print("=" * 100)
+    _, rankings = analyze_dataset_b(segments_path=output_path, dataset_dir=dataset_dir)
+    print_markdown_table(rankings)
 
     # Save summary report artifact
     report_json = Path("process_mining_results.json")
@@ -79,3 +58,4 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+

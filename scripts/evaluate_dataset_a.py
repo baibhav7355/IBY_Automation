@@ -357,6 +357,7 @@ def compute_label_consistency(
     predictions: Dict[str, List[Dict]],
     dataset_dir: Path,
     iou_threshold: float = 0.5,
+    manifest_cache: Optional[Dict[str, Any]] = None,
 ) -> Dict[str, Any]:
     """Check whether each predicted label consistently maps to one process code.
 
@@ -372,11 +373,13 @@ def compute_label_consistency(
     label_to_codes: Dict[str, dict] = defaultdict(lambda: defaultdict(int))
 
     for session_id, preds in predictions.items():
-        # Find the session directory
+        # Find the session directory or manifest cache
         ses_dir = dataset_dir / session_id
-        if not ses_dir.exists():
-            continue
-        manifest = load_ground_truth_manifest(ses_dir)
+        manifest = None
+        if ses_dir.exists():
+            manifest = load_ground_truth_manifest(ses_dir)
+        if manifest is None and manifest_cache:
+            manifest = manifest_cache.get(session_id)
         if manifest is None:
             continue
 
@@ -603,15 +606,26 @@ def main() -> None:
     print(f"  → {len(predictions)} sessions with predictions loaded.")
     print(f"  → {sum(len(v) for v in predictions.values())} total predicted segments.")
 
+    # Check for combined ground truth manifest file (e.g., in cloud or lightweight deployments)
+    manifest_cache: Dict[str, Any] = {}
+    combined_cache = args.dataset_dir / "ground_truth_manifests.json"
+    if combined_cache.is_file():
+        try:
+            with open(combined_cache, "r", encoding="utf-8") as f:
+                manifest_cache = json.load(f)
+        except Exception as e:
+            pass
+
     session_results: List[Dict] = []
     unmatched_sessions: List[str] = []
 
     for session_id, preds in sorted(predictions.items()):
         ses_dir = args.dataset_dir / session_id
-        if not ses_dir.exists():
-            unmatched_sessions.append(session_id)
-            continue
-        manifest = load_ground_truth_manifest(ses_dir)
+        manifest = None
+        if ses_dir.exists():
+            manifest = load_ground_truth_manifest(ses_dir)
+        if manifest is None and manifest_cache:
+            manifest = manifest_cache.get(session_id)
         if manifest is None:
             unmatched_sessions.append(session_id)
             continue
@@ -631,7 +645,9 @@ def main() -> None:
             print(f"    ... and {len(unmatched_sessions) - 5} more", file=sys.stderr)
 
     print("Computing label consistency...")
-    consistency = compute_label_consistency(predictions, args.dataset_dir)
+    consistency = compute_label_consistency(
+        predictions, args.dataset_dir, manifest_cache=manifest_cache
+    )
 
     print_full_report(session_results, consistency, tolerance_ms, quiet=args.quiet)
 

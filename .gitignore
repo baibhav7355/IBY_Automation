@@ -61,8 +61,24 @@ Thumbs.db
 
 # Scratch exploration scripts
 scripts/scratch_*.py
+scratch/
 
-# Datasets (large binary screenshot payloads ~12GB; omitted from Git tracking)
-dataset_a/
-dataset_b/
+# Datasets: ignore large raw session folders and binary screenshot payloads (~12GB)
+dataset_a/*
+!dataset_a/*.jsonl
+!dataset_a/*.json
+dataset_b/*
+!dataset_b/*.jsonl
+!dataset_b/*.json
+
+# Selection task prompt & company materials
+information.md
+
+# Media & assets
+assets/
+
+# Streamlit configuration & cache
+.streamlit/
+streamlit/
+
 
